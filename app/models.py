@@ -20,14 +20,18 @@ class User(db.Model):
 class Employer(db.Model):
     __tablename__ = 'employers'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     company_name = db.Column(db.String(120), nullable=False)
     contact_person = db.Column(db.String(120), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship("User", backref=db.backref("employer_profile", uselist=False))
+    user = db.relationship(
+        "User",
+        backref=db.backref("employer_profile", uselist=False, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
     
     #backef lets me do a reverse lookup from the User model to the Employer model, 
     # so I can do user.employer_profile to get the employer profile associated with a user. 
@@ -46,8 +50,12 @@ class Job(db.Model):
     location = db.Column(db.String(120), nullable=False)
     salary = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'), nullable=False)
-    employer = db.relationship("Employer", backref=db.backref("jobs", lazy=True))
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id', ondelete='CASCADE'), nullable=False)
+    employer = db.relationship(
+        "Employer",
+        backref=db.backref("jobs", lazy=True, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
     
     def __repr__(self):
         return f'<Job {self.title}>'
@@ -55,12 +63,20 @@ class Job(db.Model):
 class Application(db.Model):
     __tablename__ = 'applications'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id', ondelete='CASCADE'), nullable=False)
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship("User", backref=db.backref("applications", lazy=True))
-    job = db.relationship("Job", backref=db.backref("applications", lazy=True))
+    user = db.relationship(
+        "User",
+        backref=db.backref("applications", lazy=True, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
+    job = db.relationship(
+        "Job",
+        backref=db.backref("applications", lazy=True, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
     
     def __repr__(self):
         return f'<Application {self.id} - User {self.user_id} - Job {self.job_id}>'
@@ -70,11 +86,15 @@ class Application(db.Model):
 class Profile(db.Model):
     __tablename__ = 'profiles'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship("User", backref=db.backref("profile", uselist=False))
+    user = db.relationship(
+        "User",
+        backref=db.backref("profile", uselist=False, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
     
     def __repr__(self):
         return f'<Profile {self.full_name}>'

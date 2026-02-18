@@ -29,6 +29,9 @@ def _job_to_dict(job):
         "created_at": job.created_at.isoformat() if job.created_at else None,
     }
 
+# Job model
+applications = db.relationship("Application", backref="job", cascade="all, delete-orphan")
+# This sets up a relationship between the Job model and the Application model,
 
 @jobs_bp.route("/", methods=["GET"])
 def list_jobs():

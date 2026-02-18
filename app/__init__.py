@@ -1,4 +1,7 @@
 from flask import Flask, app, jsonify, request
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlite3 import Connection as SQLite3Connection
 from .extensions import db, migrate, ma, jwt, cors
 from config import Config
 from . import models
@@ -10,6 +13,12 @@ def create_app():
 
 
     db.init_app(app)
+    @event.listens_for(Engine, "connect")
+    def _set_sqlite_pragma(dbapi_connection, connection_record):
+        if isinstance(dbapi_connection, SQLite3Connection):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
     from . import models
     jwt.init_app(app)
     migrate.init_app(app, db)

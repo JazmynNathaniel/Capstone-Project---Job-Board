@@ -16,6 +16,10 @@ def _employer_to_dict(employer):
         "created_at": employer.created_at.isoformat() if employer.created_at else None,
     }
 
+# Employer model related jobs; cascade deletes to avoid orphaned records, 
+# but prevent deleting if related records exist to avoid data loss.
+jobs = db.relationship("Job", backref="employer", cascade="all, delete-orphan")
+
 
 @employers_bp.route("/", methods=["GET"])
 def list_employers():
@@ -74,12 +78,22 @@ def update_employer(employer_id):
     db.session.commit()
     return jsonify(_employer_to_dict(employer)), 200
 
+from sqlalchemy.exc import IntegrityError
 
 @employers_bp.route("/<int:employer_id>", methods=["DELETE"])
 def delete_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
-    db.session.delete(employer)
-    db.session.commit()
-    return jsonify({"message": "Deleted"}), 200
+
+    try:
+        db.session.delete(employer)
+        db.session.commit()
+        return jsonify({"message": "Deleted"}), 200
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({
+            "error": "Cannot delete employer because it has related records (jobs/applications). Delete those first."
+        }), 409
+
+
