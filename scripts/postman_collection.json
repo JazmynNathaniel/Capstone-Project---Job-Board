@@ -1,0 +1,269 @@
+{
+  "info": {
+    "name": "FINAL_PROJECT API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{base_url}}/auth/register"
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": "{{base_url}}/auth/login"
+      }
+    },
+    {
+      "name": "Auth - Logout",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/logout"
+      }
+    },
+    {
+      "name": "Jobs - List",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/jobs/"
+      }
+    },
+    {
+      "name": "Jobs - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Job\",\n  \"description\": \"Test job description\",\n  \"location\": \"Remote\",\n  \"salary\": 80000,\n  \"employer_id\": 1\n}"
+        },
+        "url": "{{base_url}}/jobs/"
+      }
+    },
+    {
+      "name": "Jobs - Get By Id",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/jobs/1"
+      }
+    },
+    {
+      "name": "Jobs - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Job\",\n  \"salary\": 90000\n}"
+        },
+        "url": "{{base_url}}/jobs/1"
+      }
+    },
+    {
+      "name": "Jobs - Delete",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/jobs/1"
+      }
+    },
+    {
+      "name": "Profiles - List",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/profiles/"
+      }
+    },
+    {
+      "name": "Profiles - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"full_name\": \"Test User\",\n  \"bio\": \"Test bio\"\n}"
+        },
+        "url": "{{base_url}}/profiles/"
+      }
+    },
+    {
+      "name": "Profiles - Get By Id",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/profiles/1"
+      }
+    },
+    {
+      "name": "Profiles - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"full_name\": \"Updated User\",\n  \"bio\": \"Updated bio\"\n}"
+        },
+        "url": "{{base_url}}/profiles/1"
+      }
+    },
+    {
+      "name": "Profiles - Delete",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/profiles/1"
+      }
+    },
+    {
+      "name": "Applications - List",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/applications/"
+      }
+    },
+    {
+      "name": "Applications - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"job_id\": 1,\n  \"status\": \"pending\"\n}"
+        },
+        "url": "{{base_url}}/applications/"
+      }
+    },
+    {
+      "name": "Applications - Get By Id",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/applications/1"
+      }
+    },
+    {
+      "name": "Applications - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"accepted\"\n}"
+        },
+        "url": "{{base_url}}/applications/1"
+      }
+    },
+    {
+      "name": "Applications - Delete",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/applications/1"
+      }
+    },
+    {
+      "name": "Employers - List",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/employers/"
+      }
+    },
+    {
+      "name": "Employers - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"name\": \"Test Employer\",\n  \"email\": \"employer@example.com\",\n  \"company_name\": \"Test Co\",\n  \"contact_person\": \"Test Contact\",\n  \"password_hash\": \"not-a-real-hash\"\n}"
+        },
+        "url": "{{base_url}}/employers/"
+      }
+    },
+    {
+      "name": "Employers - Get By Id",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/employers/1"
+      }
+    },
+    {
+      "name": "Employers - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company_name\": \"Updated Co\",\n  \"contact_person\": \"Updated Contact\"\n}"
+        },
+        "url": "{{base_url}}/employers/1"
+      }
+    },
+    {
+      "name": "Employers - Delete",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/employers/1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+My Tables:
+- alembic_version
+- applications
+- employers
+- jobs
+- profiles
+- users
+
+Schema:
+
+alembic_version
+  version_num VARCHAR(32) PK NOT NULL DEFAULT None
+
+applications
+  id INTEGER PK NOT NULL DEFAULT None
+  user_id INTEGER  NOT NULL DEFAULT None
+  job_id INTEGER  NOT NULL DEFAULT None
+  status VARCHAR(20)   DEFAULT None
+  created_at DATETIME   DEFAULT None
+  FKs:
+    job_id -> jobs.id
+    user_id -> users.id
+
+employers
+  id INTEGER PK NOT NULL DEFAULT None
+  name VARCHAR(120)  NOT NULL DEFAULT None
+  email VARCHAR(120)  NOT NULL DEFAULT None
+  company_name VARCHAR(120)  NOT NULL DEFAULT None
+  contact_person VARCHAR(120)  NOT NULL DEFAULT None
+  password_hash VARCHAR(128)  NOT NULL DEFAULT None
+  created_at DATETIME   DEFAULT None
+  user_id INTEGER  NOT NULL DEFAULT None
+  FKs:
+    user_id -> users.id
+
+jobs
+  id INTEGER PK NOT NULL DEFAULT None
+  title VARCHAR(120)  NOT NULL DEFAULT None
+  description TEXT  NOT NULL DEFAULT None
+  location VARCHAR(120)  NOT NULL DEFAULT None
+  salary FLOAT  NOT NULL DEFAULT None
+  created_at DATETIME   DEFAULT None
+  employer_id INTEGER  NOT NULL DEFAULT None
+  FKs:
+    employer_id -> employers.id
+
+profiles
+  id INTEGER PK NOT NULL DEFAULT None
+  user_id INTEGER  NOT NULL DEFAULT None
+  full_name VARCHAR(120)  NOT NULL DEFAULT None
+  bio TEXT   DEFAULT None
+  created_at DATETIME   DEFAULT None
+  FKs:
+    user_id -> users.id
+
+users
+  id INTEGER PK NOT NULL DEFAULT None
+  username VARCHAR(80)  NOT NULL DEFAULT None
+  email VARCHAR(120)  NOT NULL DEFAULT None
+  password_hash VARCHAR(128)  NOT NULL DEFAULT None
+  created_at DATETIME   DEFAULT None
+  role VARCHAR(20)  NOT NULL DEFAULT None
