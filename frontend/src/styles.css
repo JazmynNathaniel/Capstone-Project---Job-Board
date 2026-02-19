@@ -2,4 +2,21 @@
 body {
   margin: 0;
   min-height: 100vh;
+  background: #05000a;
+  color: #efe7ff;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+button {
+  @apply bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition;
+}
+
+nav {
+  @apply flex gap-4 justify-center py-4 bg-gray-800;
 }

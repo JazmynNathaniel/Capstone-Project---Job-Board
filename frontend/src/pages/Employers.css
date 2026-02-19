@@ -1,0 +1,91 @@
+.page-employers {
+  @apply flex flex-col gap-8;
+}
+
+.page-header {
+  @apply flex flex-col gap-4 md:flex-row md:items-center md:justify-between;
+}
+
+.eyebrow {
+  @apply text-xs uppercase tracking-[0.3em] text-cyan-300;
+}
+
+.title {
+  @apply mt-2 text-3xl font-semibold text-white;
+}
+
+.subtitle {
+  @apply mt-2 text-purple-200;
+}
+
+.btn {
+  @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-400 text-slate-900 hover:bg-cyan-300;
+}
+
+.btn-ghost {
+  @apply border border-cyan-300/50 text-purple-200 hover:border-cyan-300 hover:text-cyan-200;
+}
+
+.input {
+  @apply rounded-lg border border-cyan-300/40 bg-black px-3 py-2 text-sm text-purple-100;
+}
+
+.card-grid {
+  @apply grid gap-4 md:grid-cols-2;
+}
+
+.employer-card {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-6;
+}
+
+.employer-head {
+  @apply flex items-start justify-between gap-4;
+}
+
+.employer-head h3 {
+  @apply text-lg font-semibold text-white;
+}
+
+.employer-head p {
+  @apply text-sm text-purple-300;
+}
+
+.pill {
+  @apply rounded-full bg-purple-900 px-3 py-1 text-xs text-cyan-200;
+}
+
+.employer-meta {
+  @apply mt-3 text-sm text-purple-200;
+}
+
+.error-banner {
+  @apply rounded-xl border border-fuchsia-400/50 bg-fuchsia-400/10 p-4 text-sm text-fuchsia-200;
+}
+
+.success-banner {
+  @apply rounded-xl border border-cyan-300/50 bg-cyan-300/10 p-4 text-sm text-cyan-200;
+}
+
+.empty-card {
+  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-6 text-purple-200;
+}
+
+.form-grid {
+  @apply grid gap-4 lg:grid-cols-3;
+}
+
+.form-card {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+}
+
+.form-card h3 {
+  @apply mb-3 text-sm font-semibold text-purple-200;
+}
+
+.btn-danger {
+  @apply rounded-full bg-fuchsia-500 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-400;
+}

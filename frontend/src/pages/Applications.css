@@ -1,0 +1,87 @@
+.page-applications {
+  @apply flex flex-col gap-8;
+}
+
+.page-header {
+  @apply flex flex-col gap-4 md:flex-row md:items-center md:justify-between;
+}
+
+.eyebrow {
+  @apply text-xs uppercase tracking-[0.3em] text-cyan-300;
+}
+
+.title {
+  @apply mt-2 text-3xl font-semibold text-white;
+}
+
+.subtitle {
+  @apply mt-2 text-purple-200;
+}
+
+.btn {
+  @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-300 text-black hover:bg-cyan-200;
+}
+
+.input {
+  @apply rounded-lg border border-cyan-300/40 bg-black px-3 py-2 text-sm text-purple-100;
+}
+
+.pipeline-grid {
+  @apply grid gap-4 md:grid-cols-3;
+}
+
+.pipeline-column {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4;
+}
+
+.pipeline-column h3 {
+  @apply text-sm uppercase tracking-[0.2em] text-purple-300;
+}
+
+.pipeline-card {
+  @apply mt-4 rounded-xl border border-cyan-300/30 bg-black p-4;
+}
+
+.pipeline-card .name {
+  @apply text-base font-semibold text-white;
+}
+
+.pipeline-card .role {
+  @apply text-sm text-purple-200;
+}
+
+.pipeline-card .meta {
+  @apply mt-2 text-xs text-purple-400;
+}
+
+.error-banner {
+  @apply rounded-xl border border-fuchsia-400/50 bg-fuchsia-400/10 p-4 text-sm text-fuchsia-200;
+}
+
+.success-banner {
+  @apply rounded-xl border border-cyan-300/50 bg-cyan-300/10 p-4 text-sm text-cyan-200;
+}
+
+.empty-card {
+  @apply mt-4 rounded-xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-4 text-xs text-purple-200;
+}
+
+.form-grid {
+  @apply grid gap-4 lg:grid-cols-3;
+}
+
+.form-card {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+}
+
+.form-card h3 {
+  @apply mb-3 text-sm font-semibold text-purple-200;
+}
+
+.btn-danger {
+  @apply rounded-full bg-fuchsia-500 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-400;
+}

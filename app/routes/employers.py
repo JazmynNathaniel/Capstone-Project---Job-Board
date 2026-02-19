@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.exc import IntegrityError
 from ..extensions import db
-from ..models import Employer
+from ..models import Employer, User
 
 employers_bp = Blueprint("employers", __name__)
 
@@ -16,18 +18,23 @@ def _employer_to_dict(employer):
         "created_at": employer.created_at.isoformat() if employer.created_at else None,
     }
 
-# Employer model related jobs; cascade deletes to avoid orphaned records, 
-# but prevent deleting if related records exist to avoid data loss.
-jobs = db.relationship("Job", backref="employer", cascade="all, delete-orphan")
-
-
 @employers_bp.route("/", methods=["GET"])
+@jwt_required()
 def list_employers():
-    employers = Employer.query.all()
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role == "admin":
+        employers = Employer.query.all()
+    elif user.role == "employer":
+        employers = Employer.query.filter_by(user_id=user.id).all()
+    else:
+        return jsonify({"error": "Forbidden"}), 403
     return jsonify([_employer_to_dict(e) for e in employers]), 200
 
 
 @employers_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_employer():
     data = request.get_json()
     if not data:
@@ -36,6 +43,14 @@ def create_employer():
     required = ["user_id", "name", "email", "company_name", "contact_person", "password_hash"]
     if any(not data.get(k) for k in required):
         return jsonify({"error": "Missing fields"}), 400
+
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role == "employer" and int(data["user_id"]) != user.id:
+        return jsonify({"error": "Forbidden"}), 403
+    if user.role not in {"employer", "admin"}:
+        return jsonify({"error": "Forbidden"}), 403
 
     employer = Employer(
         user_id=int(data["user_id"]),
@@ -51,18 +66,37 @@ def create_employer():
 
 
 @employers_bp.route("/<int:employer_id>", methods=["GET"])
+@jwt_required()
 def get_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role == "admin":
+        return jsonify(_employer_to_dict(employer)), 200
+    if user.role == "employer" and employer.user_id == user.id:
+        return jsonify(_employer_to_dict(employer)), 200
+    return jsonify({"error": "Forbidden"}), 403
     return jsonify(_employer_to_dict(employer)), 200
 
 
 @employers_bp.route("/<int:employer_id>", methods=["PUT"])
+@jwt_required()
 def update_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role == "admin":
+        pass
+    elif user.role == "employer" and employer.user_id == user.id:
+        pass
+    else:
+        return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
     if not data:
@@ -78,13 +112,17 @@ def update_employer(employer_id):
     db.session.commit()
     return jsonify(_employer_to_dict(employer)), 200
 
-from sqlalchemy.exc import IntegrityError
-
 @employers_bp.route("/<int:employer_id>", methods=["DELETE"])
+@jwt_required()
 def delete_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role != "admin":
+        return jsonify({"error": "Forbidden"}), 403
 
     try:
         db.session.delete(employer)
@@ -95,5 +133,4 @@ def delete_employer(employer_id):
         return jsonify({
             "error": "Cannot delete employer because it has related records (jobs/applications). Delete those first."
         }), 409
-
 

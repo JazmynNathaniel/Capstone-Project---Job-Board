@@ -27,6 +27,8 @@ def register():
         return jsonify({"error": "Invalid email"}), 400
     if len(password) < 8:
         return jsonify({"error": "Password must be at least 8 characters"}), 400
+    if role not in {"user", "employer", "admin"}:
+        return jsonify({"error": "Invalid role"}), 400
 
     existing = User.query.filter_by(email=email).first()
     if existing:

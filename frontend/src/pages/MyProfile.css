@@ -1,0 +1,87 @@
+.page-my-profile {
+  @apply flex flex-col gap-8;
+}
+
+.page-header {
+  @apply flex flex-col gap-4;
+}
+
+.eyebrow {
+  @apply text-xs uppercase tracking-[0.3em] text-cyan-300;
+}
+
+.title {
+  @apply mt-2 text-3xl font-semibold text-white;
+}
+
+.subtitle {
+  @apply mt-2 text-slate-300;
+}
+
+.profile-panel {
+  @apply grid gap-4 lg:grid-cols-[1.2fr_1fr];
+}
+
+.profile-summary {
+  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-6;
+}
+
+.profile-summary h3 {
+  @apply text-xl font-semibold text-white;
+}
+
+.profile-summary p {
+  @apply mt-2 text-sm text-purple-200;
+}
+
+.meta {
+  @apply mt-4 text-xs text-purple-400;
+}
+
+.form-card {
+  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-6;
+}
+
+.form-card h3 {
+  @apply mb-3 text-sm font-semibold text-purple-200;
+}
+
+.input {
+  @apply rounded-lg border border-cyan-300/40 bg-black px-3 py-2 text-sm text-purple-100;
+}
+
+.textarea {
+  @apply min-h-[100px];
+}
+
+.btn {
+  @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-300 text-black hover:bg-cyan-200;
+}
+
+.btn-danger {
+  @apply rounded-full bg-fuchsia-500 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-400;
+}
+
+.danger-card {
+  @apply rounded-2xl border border-fuchsia-400/50 bg-purple-950/60 p-6;
+}
+
+.danger-card p {
+  @apply mt-2 text-sm text-purple-200;
+}
+
+.error-banner {
+  @apply rounded-xl border border-fuchsia-400/50 bg-fuchsia-400/10 p-4 text-sm text-fuchsia-200;
+}
+
+.success-banner {
+  @apply rounded-xl border border-cyan-300/50 bg-cyan-300/10 p-4 text-sm text-cyan-200;
+}
+
+.empty-card {
+  @apply rounded-2xl border border-dashed border-cyan-300/40 bg-purple-950/40 p-6 text-purple-200;
+}

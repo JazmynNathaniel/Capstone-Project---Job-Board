@@ -1,0 +1,67 @@
+.page-home {
+  @apply flex flex-col gap-12;
+}
+
+.hero {
+  @apply grid gap-10 rounded-3xl border border-cyan-300/40 bg-purple-950/70 p-10 lg:grid-cols-[2fr_1fr];
+}
+
+.hero-copy .eyebrow {
+  @apply text-xs uppercase tracking-[0.3em] text-cyan-300;
+}
+
+.hero-copy .title {
+  @apply mt-3 text-4xl font-semibold text-white sm:text-5xl;
+}
+
+.hero-copy .subtitle {
+  @apply mt-3 max-w-2xl text-purple-200;
+}
+
+.actions {
+  @apply mt-6 flex flex-wrap gap-3;
+}
+
+.btn {
+  @apply rounded-full px-5 py-2 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-400 text-slate-900 hover:bg-cyan-300;
+}
+
+.btn-ghost {
+  @apply border border-cyan-300/50 text-purple-200 hover:border-cyan-300 hover:text-cyan-200;
+}
+
+.hero-panel {
+  @apply grid gap-4;
+}
+
+.stat-card {
+  @apply rounded-2xl border border-cyan-300/40 bg-black/70 p-5;
+}
+
+.stat-label {
+  @apply text-xs uppercase tracking-[0.2em] text-purple-300;
+}
+
+.stat-value {
+  @apply mt-2 text-3xl font-semibold text-white;
+}
+
+.section-grid {
+  @apply grid gap-4 md:grid-cols-2;
+}
+
+.feature-card {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-6;
+}
+
+.feature-card h3 {
+  @apply text-lg font-semibold text-white;
+}
+
+.feature-card p {
+  @apply mt-2 text-sm text-purple-200;
+}
