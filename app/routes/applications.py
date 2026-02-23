@@ -19,7 +19,7 @@ def _application_to_dict(application):
 @applications_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_applications():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "user":
@@ -48,7 +48,7 @@ def create_application():
     if any(k not in data or data.get(k) in (None, "") for k in required):
         return jsonify({"error": "Missing fields"}), 400
 
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "user":
@@ -75,7 +75,7 @@ def get_application(application_id):
     application = Application.query.get(application_id)
     if not application:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "user" and application.user_id != user.id:
@@ -98,7 +98,7 @@ def update_application(application_id):
     application = Application.query.get(application_id)
     if not application:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "employer":
@@ -131,7 +131,7 @@ def delete_application(application_id):
     application = Application.query.get(application_id)
     if not application:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "admin":

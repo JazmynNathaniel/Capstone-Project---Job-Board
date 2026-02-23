@@ -26,7 +26,7 @@ def _profile_to_dict(profile):
 @profiles_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_profiles():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "admin":
@@ -50,7 +50,7 @@ def create_profile():
     if err:
         return jsonify({"error": err}), 400
 
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "user" and user_id != user.id:
@@ -74,7 +74,7 @@ def get_profile(profile_id):
     profile = Profile.query.get(profile_id)
     if not profile:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -90,7 +90,7 @@ def update_profile(profile_id):
     profile = Profile.query.get(profile_id)
     if not profile:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -123,7 +123,7 @@ def delete_profile(profile_id):
     profile = Profile.query.get(profile_id)
     if not profile:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -140,7 +140,7 @@ def delete_profile(profile_id):
 @profiles_bp.route("/me", methods=["GET"])
 @jwt_required()
 def get_my_profile():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "user":
@@ -154,7 +154,7 @@ def get_my_profile():
 @profiles_bp.route("/me", methods=["POST"])
 @jwt_required()
 def create_my_profile():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "user":
@@ -181,7 +181,7 @@ def create_my_profile():
 @profiles_bp.route("/me", methods=["PUT"])
 @jwt_required()
 def update_my_profile():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "user":
@@ -208,7 +208,7 @@ def update_my_profile():
 @profiles_bp.route("/me", methods=["DELETE"])
 @jwt_required()
 def delete_my_profile():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "user":

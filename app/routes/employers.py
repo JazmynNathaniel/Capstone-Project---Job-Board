@@ -23,7 +23,7 @@ def _employer_to_dict(employer):
 @employers_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_employers():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -46,7 +46,7 @@ def create_employer():
     if any(not data.get(k) for k in required):
         return jsonify({"error": "Missing fields"}), 400
 
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "employer" and int(data["user_id"]) != user.id:
@@ -76,7 +76,7 @@ def get_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -93,7 +93,7 @@ def update_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "admin":
@@ -123,7 +123,7 @@ def delete_employer(employer_id):
     employer = Employer.query.get(employer_id)
     if not employer:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "admin":

@@ -20,7 +20,7 @@ def _user_to_dict(user):
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_users():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "admin":
@@ -32,7 +32,7 @@ def list_users():
 @users_bp.route("/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(user_id):
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role != "admin":

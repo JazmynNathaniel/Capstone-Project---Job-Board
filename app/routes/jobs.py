@@ -52,7 +52,7 @@ applications = db.relationship("Application", backref="job", cascade="all, delet
 @jobs_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_jobs():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     query_text = request.args.get("query", type=str, default="").strip()
@@ -109,7 +109,7 @@ def list_jobs():
 @jobs_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_job():
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role not in {"employer", "admin"}:
@@ -157,7 +157,7 @@ def get_job(job_id):
     job = Job.query.get(job_id)
     if not job:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "employer":
@@ -175,7 +175,7 @@ def update_job(job_id):
     job = Job.query.get(job_id)
     if not job:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "employer":
@@ -214,7 +214,7 @@ def delete_job(job_id):
     job = Job.query.get(job_id)
     if not job:
         return jsonify({"error": "Not found"}), 404
-    user = User.query.get(get_jwt_identity())
+    user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
     if user.role == "employer":
