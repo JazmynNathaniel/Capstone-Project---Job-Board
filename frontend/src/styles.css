@@ -11,6 +11,7 @@ header {
   color: white;
   padding: 1rem;
   text-align: center;
+  text-shadow: #05000a 0px 0px 5px;
 }
 
 button {

@@ -5,3 +5,7 @@
 .nav-link.active {
   @apply border-cyan-300 text-cyan-200;
 }
+
+h1 {
+  @apply text-2xl font-semibold text-white;
+}

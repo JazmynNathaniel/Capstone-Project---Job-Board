@@ -34,9 +34,9 @@ function App() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-                Somedeed Platform
+          
               </p>
-              <h1 className="text-2xl font-semibold text-white">Capstone Job Board</h1>
+              <h1 className="text-2xl font-semibold text-white">Welcome to Somedeed!</h1>
             </div>
           </div>
           <nav className="flex flex-wrap gap-3 text-sm">
@@ -82,7 +82,7 @@ function App() {
 
         <footer className="mt-6 border-t border-cyan-300/20 pt-4 text-xs text-purple-300">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span>Somedeed Platform · Admin access is monitored.</span>
+            <span>Somedeed · Admin access is monitored.</span>
             <NavLink className="nav-link" to="/admin-login">Admin Login</NavLink>
           </div>
         </footer>
