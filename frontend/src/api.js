@@ -55,8 +55,15 @@ export function getHealth() {
   return request("/health");
 }
 
-export function listJobs() {
-  return request("/jobs/");
+export function listJobs(params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, value);
+    }
+  });
+  const query = search.toString();
+  return request(`/jobs/${query ? `?${query}` : ""}`);
 }
 
 export function createJob(payload) {

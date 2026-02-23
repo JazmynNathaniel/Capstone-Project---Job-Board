@@ -6,6 +6,12 @@ export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [filters, setFilters] = useState({
+    query: "",
+    location: "",
+    salaryRange: "",
+    sort: ""
+  });
   const [createForm, setCreateForm] = useState({
     title: "",
     description: "",
@@ -23,8 +29,25 @@ export default function Jobs() {
   });
   const [deleteId, setDeleteId] = useState("");
 
-  const refresh = () => {
-    listJobs()
+  const buildParams = (nextFilters) => {
+    const params = {};
+    if (nextFilters.query.trim()) params.query = nextFilters.query.trim();
+    if (nextFilters.location.trim()) params.location = nextFilters.location.trim();
+    if (nextFilters.salaryRange === "40-60") {
+      params.min_salary = 40000;
+      params.max_salary = 60000;
+    } else if (nextFilters.salaryRange === "60-90") {
+      params.min_salary = 60000;
+      params.max_salary = 90000;
+    } else if (nextFilters.salaryRange === "90+") {
+      params.min_salary = 90000;
+    }
+    if (nextFilters.sort) params.sort = nextFilters.sort;
+    return params;
+  };
+
+  const refresh = (nextFilters = filters) => {
+    listJobs(buildParams(nextFilters))
       .then((data) => setJobs(data || []))
       .catch((err) => setError(err.message || "Failed to load jobs"));
   };
@@ -32,6 +55,20 @@ export default function Jobs() {
   useEffect(() => {
     refresh();
   }, []);
+
+  const handleFilter = () => {
+    setError("");
+    setMessage("");
+    refresh(filters);
+  };
+
+  const handleClearFilters = () => {
+    const cleared = { query: "", location: "", salaryRange: "", sort: "" };
+    setFilters(cleared);
+    setError("");
+    setMessage("");
+    refresh(cleared);
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -51,7 +88,7 @@ export default function Jobs() {
         salary: "",
         employer_id: ""
       });
-      refresh();
+      refresh(filters);
     } catch (err) {
       setError(err.message || "Failed to create job");
     }
@@ -78,7 +115,7 @@ export default function Jobs() {
         salary: "",
         employer_id: ""
       });
-      refresh();
+      refresh(filters);
     } catch (err) {
       setError(err.message || "Failed to update job");
     }
@@ -92,7 +129,7 @@ export default function Jobs() {
       await deleteJob(deleteId);
       setMessage("Job deleted.");
       setDeleteId("");
-      refresh();
+      refresh(filters);
     } catch (err) {
       setError(err.message || "Failed to delete job");
     }
@@ -110,16 +147,51 @@ export default function Jobs() {
       </header>
 
       <section className="filter-bar">
-        <input className="input" placeholder="Search titles or keywords" />
-        <input className="input" placeholder="Location" />
-        <select className="input">
-          <option>Salary range</option>
-          <option>$40k - $60k</option>
-          <option>$60k - $90k</option>
-          <option>$90k+</option>
+        <input
+          className="input"
+          placeholder="Search titles or keywords"
+          value={filters.query}
+          onChange={(e) => setFilters({ ...filters, query: e.target.value })}
+        />
+        <input
+          className="input"
+          placeholder="Location"
+          value={filters.location}
+          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+        />
+        <select
+          className="input"
+          value={filters.salaryRange}
+          onChange={(e) => setFilters({ ...filters, salaryRange: e.target.value })}
+        >
+          <option value="">Salary range</option>
+          <option value="40-60">$40k - $60k</option>
+          <option value="60-90">$60k - $90k</option>
+          <option value="90+">$90k+</option>
         </select>
-        <button className="btn btn-ghost">Filter</button>
+        <select
+          className="input"
+          value={filters.sort}
+          onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+        >
+          <option value="">Sort</option>
+          <option value="alpha">Alphabetical</option>
+          <option value="relevance">Relevance</option>
+        </select>
+        <div className="filter-actions">
+          <button type="button" className="btn btn-ghost" onClick={handleFilter}>
+            Filter
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={handleClearFilters}>
+            Clear
+          </button>
+        </div>
       </section>
+      {filters.sort === "relevance" && !filters.query.trim() && (
+        <p className="helper-text">
+          Relevance sorting is based on your search terms. Add a keyword to refine results.
+        </p>
+      )}
 
       {error && <div className="error-banner">{error}</div>}
       {message && <div className="success-banner">{message}</div>}

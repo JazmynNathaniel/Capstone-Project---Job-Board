@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import or_
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
 from ..models import Job, Employer, User
@@ -30,6 +31,19 @@ def _job_to_dict(job):
         "created_at": job.created_at.isoformat() if job.created_at else None,
     }
 
+
+def _relevance_score(job, terms):
+    title = (job.title or "").lower()
+    description = (job.description or "").lower()
+    score = 0
+    for term in terms:
+        if term in title:
+            score += 2
+        if term in description:
+            score += 1
+    return score
+
+
 # Job model
 applications = db.relationship("Application", backref="job", cascade="all, delete-orphan")
 # This sets up a relationship between the Job model and the Application model,
@@ -40,15 +54,54 @@ def list_jobs():
     user = User.query.get(get_jwt_identity())
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
+    query_text = request.args.get("query", type=str, default="").strip()
+    location = request.args.get("location", type=str, default="").strip()
+    min_salary, err = _parse_float(request.args.get("min_salary"), "min_salary")
+    if err and request.args.get("min_salary") is not None:
+        return jsonify({"error": err}), 400
+    max_salary, err = _parse_float(request.args.get("max_salary"), "max_salary")
+    if err and request.args.get("max_salary") is not None:
+        return jsonify({"error": err}), 400
+    sort = request.args.get("sort", type=str, default="").strip().lower()
+    if sort and sort not in {"alpha", "relevance"}:
+        return jsonify({"error": "Invalid sort"}), 400
+
     if user.role == "employer":
         employer = Employer.query.filter_by(user_id=user.id).first()
         if not employer:
             return jsonify([]), 200
-        jobs = Job.query.filter_by(employer_id=employer.id).all()
+        jobs_query = Job.query.filter_by(employer_id=employer.id)
     elif user.role in {"user", "admin"}:
-        jobs = Job.query.all()
+        jobs_query = Job.query
     else:
         return jsonify({"error": "Forbidden"}), 403
+
+    if location:
+        jobs_query = jobs_query.filter(Job.location.ilike(f"%{location}%"))
+    if query_text:
+        jobs_query = jobs_query.filter(
+            or_(
+                Job.title.ilike(f"%{query_text}%"),
+                Job.description.ilike(f"%{query_text}%")
+            )
+        )
+    if min_salary is not None:
+        jobs_query = jobs_query.filter(Job.salary >= min_salary)
+    if max_salary is not None:
+        jobs_query = jobs_query.filter(Job.salary <= max_salary)
+
+    if sort == "alpha":
+        jobs = jobs_query.order_by(Job.title.asc()).all()
+    elif sort == "relevance":
+        jobs = jobs_query.all()
+        terms = [t for t in query_text.lower().split() if t]
+        if terms:
+            jobs.sort(key=lambda j: (-_relevance_score(j, terms), (j.title or "").lower()))
+        else:
+            jobs.sort(key=lambda j: (j.title or "").lower())
+    else:
+        jobs = jobs_query.all()
+
     return jsonify([_job_to_dict(j) for j in jobs]), 200
 
 

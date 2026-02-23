@@ -19,7 +19,11 @@
 }
 
 .filter-bar {
-  @apply grid gap-3 rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-4 md:grid-cols-[2fr_1fr_1fr_auto];
+  @apply grid gap-3 rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-4 md:grid-cols-[2fr_1fr_1fr_1fr_auto];
+}
+
+.filter-actions {
+  @apply flex flex-wrap gap-2;
 }
 
 .input {
@@ -76,6 +80,10 @@
 
 .success-banner {
   @apply rounded-xl border border-cyan-300/50 bg-cyan-300/10 p-4 text-sm text-cyan-200;
+}
+
+.helper-text {
+  @apply -mt-3 text-xs text-purple-300;
 }
 
 .empty-card {
