@@ -1,4 +1,5 @@
-from flask import Flask, app, jsonify, request
+import os
+from flask import Flask, app, jsonify, request, send_from_directory
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
@@ -7,7 +8,9 @@ from config import Config
 from . import models
 
 def create_app():
-    app = Flask(__name__)
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    dist_dir = os.path.join(project_root, "frontend", "dist")
+    app = Flask(__name__, static_folder=dist_dir, static_url_path="/")
     app.config.from_object(Config)
     print("DB URI =", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
@@ -44,5 +47,17 @@ def create_app():
     @app.get("/health")
     def health():
         return jsonify({"status": "ok"}), 200
+
+    if os.path.exists(dist_dir):
+        @app.get("/")
+        def serve_index():
+            return send_from_directory(dist_dir, "index.html")
+
+        @app.get("/<path:path>")
+        def serve_static(path):
+            file_path = os.path.join(dist_dir, path)
+            if os.path.exists(file_path):
+                return send_from_directory(dist_dir, path)
+            return send_from_directory(dist_dir, "index.html")
 
     return app
