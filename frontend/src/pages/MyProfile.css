@@ -23,7 +23,7 @@
 }
 
 .profile-summary {
-  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-6;
+  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-4 md:p-6;
 }
 
 .profile-summary h3 {
@@ -39,7 +39,7 @@
 }
 
 .form-card {
-  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-6;
+  @apply rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-4 md:p-6;
 }
 
 .form-card h3 {
@@ -67,7 +67,7 @@
 }
 
 .danger-card {
-  @apply rounded-2xl border border-fuchsia-400/50 bg-purple-950/60 p-6;
+  @apply rounded-2xl border border-fuchsia-400/50 bg-purple-950/60 p-4 md:p-6;
 }
 
 .danger-card p {
@@ -83,5 +83,5 @@
 }
 
 .empty-card {
-  @apply rounded-2xl border border-dashed border-cyan-300/40 bg-purple-950/40 p-6 text-purple-200;
+  @apply rounded-2xl border border-dashed border-cyan-300/40 bg-purple-950/40 p-4 md:p-6 text-purple-200;
 }

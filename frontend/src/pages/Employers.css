@@ -39,7 +39,7 @@
 }
 
 .employer-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-6;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4 md:p-6;
 }
 
 .employer-head {
@@ -71,7 +71,7 @@
 }
 
 .empty-card {
-  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-6 text-purple-200;
+  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-4 md:p-6 text-purple-200;
 }
 
 .form-grid {
@@ -79,7 +79,7 @@
 }
 
 .form-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-4 md:p-5;
 }
 
 .form-card h3 {

@@ -35,7 +35,7 @@
 }
 
 .pipeline-column {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4 md:p-5;
 }
 
 .pipeline-column h3 {
@@ -43,7 +43,7 @@
 }
 
 .pipeline-card {
-  @apply mt-4 rounded-xl border border-cyan-300/30 bg-black p-4;
+  @apply mt-4 rounded-xl border border-cyan-300/30 bg-black p-3 md:p-4;
 }
 
 .pipeline-card .name {
@@ -75,7 +75,7 @@
 }
 
 .form-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-4 md:p-5;
 }
 
 .form-card h3 {

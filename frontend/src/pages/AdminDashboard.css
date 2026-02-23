@@ -23,7 +23,7 @@
 }
 
 .admin-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-4 md:p-5;
 }
 
 .admin-card h3 {
@@ -51,11 +51,11 @@
 }
 
 .table {
-  @apply grid gap-3;
+  @apply grid gap-3 overflow-x-auto;
 }
 
 .table-row {
-  @apply grid grid-cols-[40px_1fr_1fr_120px_110px] items-center gap-3 rounded-xl border border-cyan-300/20 bg-black/30 px-3 py-2 text-xs text-purple-100;
+  @apply grid min-w-[640px] grid-cols-[40px_1fr_1fr_120px_110px] items-center gap-3 rounded-xl border border-cyan-300/20 bg-black/30 px-3 py-2 text-xs text-purple-100;
 }
 
 .table-head {

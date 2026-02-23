@@ -3,7 +3,7 @@
 }
 
 .auth-card {
-  @apply w-full max-w-lg rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-8;
+  @apply w-full max-w-lg rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-6 md:p-8;
 }
 
 .auth-card h1 {

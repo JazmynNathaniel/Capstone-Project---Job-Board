@@ -19,7 +19,7 @@
 }
 
 .filter-bar {
-  @apply grid gap-3 rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-4 md:grid-cols-[2fr_1fr_1fr_1fr_auto];
+  @apply grid gap-3 rounded-2xl border border-cyan-300/40 bg-purple-950/60 p-3 md:grid-cols-[2fr_1fr_1fr_1fr_auto] md:p-4;
 }
 
 .filter-actions {
@@ -47,7 +47,7 @@
 }
 
 .job-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-6;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4 md:p-6;
 }
 
 .job-head {
@@ -71,7 +71,7 @@
 }
 
 .job-meta {
-  @apply mt-4 flex items-center justify-between text-xs text-purple-400;
+  @apply mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-purple-400;
 }
 
 .error-banner {
@@ -87,7 +87,7 @@
 }
 
 .empty-card {
-  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-6 text-purple-200;
+  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-4 md:p-6 text-purple-200;
 }
 
 .form-grid {
@@ -95,7 +95,7 @@
 }
 
 .form-card {
-  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-5;
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-4 md:p-5;
 }
 
 .form-card h3 {

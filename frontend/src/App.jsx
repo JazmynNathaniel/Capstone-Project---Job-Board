@@ -30,7 +30,7 @@ function App() {
   return (
     <div className="min-h-screen bg-black text-purple-100">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
-        <header className="flex flex-col gap-4 rounded-2xl border border-cyan-300/40 bg-purple-950/70 p-6">
+        <header className="flex flex-col gap-4 rounded-2xl border border-cyan-300/40 bg-purple-950/70 p-4 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">

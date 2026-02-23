@@ -1,5 +1,5 @@
 .nav-link {
-  @apply rounded-full border border-transparent px-3 py-1 text-sm text-purple-200 transition hover:border-cyan-300 hover:text-cyan-200;
+  @apply rounded-full border border-transparent px-4 py-2 text-sm text-purple-200 transition hover:border-cyan-300 hover:text-cyan-200;
 }
 
 .nav-link.active {
