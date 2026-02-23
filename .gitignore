@@ -7,3 +7,6 @@ frontend/dist/
 frontend/.env
 .env
 .vscode/
+backend.log
+backend.err.log
+/package-lock.json
