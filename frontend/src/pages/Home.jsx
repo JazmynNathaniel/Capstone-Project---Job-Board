@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Home.css";
 
 export default function Home() {
@@ -12,8 +13,8 @@ export default function Home() {
             employers. Build from this foundation and ship fast.
           </p>
           <div className="actions">
-            <button className="btn btn-primary">Browse Jobs</button>
-            <button className="btn btn-ghost">Create Account</button>
+            <Link className="btn btn-primary" to="/jobs">Browse Jobs</Link>
+            <Link className="btn btn-ghost" to="/register">Create Account</Link>
           </div>
         </div>
         <div className="hero-panel">
