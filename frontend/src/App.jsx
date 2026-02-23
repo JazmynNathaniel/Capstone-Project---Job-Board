@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, NavLink } from "react-router-dom";
 import "./App.css";
-import { getHealth, getAuthToken, getAuthRole, clearAuthToken } from "./api";
+import { getAuthToken, getAuthRole, clearAuthToken } from "./api";
 import Home from "./pages/Home";
 import Jobs from "./pages/Jobs";
 import Employers from "./pages/Employers";
@@ -14,22 +14,11 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
-  const [health, setHealth] = useState("checking...");
   const [authed, setAuthed] = useState(!!getAuthToken());
   const [role, setRole] = useState(getAuthRole());
 
   useEffect(() => {
-    let isMounted = true;
-    getHealth()
-      .then((data) => {
-        if (isMounted) setHealth(data.status || "ok");
-      })
-      .catch(() => {
-        if (isMounted) setHealth("offline");
-      });
-    return () => {
-      isMounted = false;
-    };
+    return () => {};
   }, []);
 
   const handleLogout = () => {
@@ -48,10 +37,6 @@ function App() {
                 Somedeed Platform
               </p>
               <h1 className="text-2xl font-semibold text-white">Capstone Job Board</h1>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-purple-200">
-              <span>Status:</span>
-              <span className="rounded-full bg-purple-900 px-3 py-1 text-cyan-200">{health}</span>
             </div>
           </div>
           <nav className="flex flex-wrap gap-3 text-sm">
@@ -74,7 +59,6 @@ function App() {
             )}
           </nav>
         </header>
-
         <Routes>
           <Route path="/" element={<Home />} />
           {authed && <Route path="/jobs" element={<Jobs />} />}
