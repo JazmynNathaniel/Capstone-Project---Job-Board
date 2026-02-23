@@ -102,6 +102,34 @@ def login():
     })
 
 
+# ADMIN LOGIN
+@auth_bp.route("/admin-login", methods=["POST"])
+def admin_login():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Missing fields"}), 400
+    if "@" not in email:
+        return jsonify({"error": "Invalid email"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user or user.role != "admin" or not check_password_hash(user.password_hash, password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    token = create_access_token(identity=user.id)
+
+    return jsonify({
+        "token": token,
+        "user_id": user.id,
+        "role": user.role
+    })
+
+
 # LOGOUT
 @auth_bp.route("/logout", methods=["POST"])
 def logout():

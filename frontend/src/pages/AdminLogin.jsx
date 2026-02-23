@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { loginUser, setAuthRole, setAuthToken, clearAuthToken, getAuthToken, getAuthRole } from "../api";
+import { loginAdmin, setAuthRole, setAuthToken, clearAuthToken, getAuthToken, getAuthRole } from "../api";
 import "./Auth.css";
 
 export default function AdminLogin() {
@@ -18,7 +18,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setMessage("");
     try {
-      const data = await loginUser(form);
+      const data = await loginAdmin(form);
       if (!data || data.role !== "admin") {
         clearAuthToken();
         setMessage("Admin access only.");

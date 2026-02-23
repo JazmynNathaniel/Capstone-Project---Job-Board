@@ -205,3 +205,10 @@ export function loginUser(payload) {
     body: JSON.stringify(payload)
   });
 }
+
+export function loginAdmin(payload) {
+  return request("/auth/admin-login", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
