@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: capstone-job-board
+    env: python
+    buildCommand: export FLASK_APP=run.py && pip install -r requirements.txt && flask db upgrade && cd frontend && npm install && npm run build && cd ..
+    startCommand: gunicorn run:app
