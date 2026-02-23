@@ -5,4 +5,5 @@ instance/
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+.env
 .vscode/
