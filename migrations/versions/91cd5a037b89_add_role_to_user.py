@@ -7,6 +7,7 @@ Create Date: 2026-02-18 09:19:15.426737
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import text
 
 
 # revision identifiers, used by Alembic.
@@ -17,16 +18,29 @@ depends_on = None
 
 
 def upgrade():
-    # Add role with a server default to avoid non-null errors on existing rows.
-    with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('role', sa.String(length=20), nullable=False, server_default='user'))
+    bind = op.get_bind()
+
+    def _has_column(table, column):
+        if bind.dialect.name == "sqlite":
+            rows = bind.execute(text(f"PRAGMA table_info({table})")).fetchall()
+            return any(r[1] == column for r in rows)
+        rows = bind.execute(
+            text("SELECT column_name FROM information_schema.columns WHERE table_name = :t")
+            , {"t": table}
+        ).fetchall()
+        return any(r[0] == column for r in rows)
+
+    if not _has_column("users", "role"):
+        # Add role with a server default to avoid non-null errors on existing rows.
+        with op.batch_alter_table('users', schema=None) as batch_op:
+            batch_op.add_column(sa.Column('role', sa.String(length=20), nullable=False, server_default='user'))
 
     # Add user_id to employers. Keep nullable to avoid failures on existing rows.
-    with op.batch_alter_table('employers', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('user_id', sa.Integer(), nullable=True))
-        bind = op.get_bind()
-        if bind.dialect.name != "sqlite":
-            batch_op.create_foreign_key('fk_employers_user_id_users', 'users', ['user_id'], ['id'])
+    if not _has_column("employers", "user_id"):
+        with op.batch_alter_table('employers', schema=None) as batch_op:
+            batch_op.add_column(sa.Column('user_id', sa.Integer(), nullable=True))
+            if bind.dialect.name != "sqlite":
+                batch_op.create_foreign_key('fk_employers_user_id_users', 'users', ['user_id'], ['id'])
 
 
 def downgrade():
