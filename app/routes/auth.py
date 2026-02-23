@@ -4,6 +4,7 @@ from flask_jwt_extended import create_access_token
 
 from ..extensions import db
 from ..models import User, Employer
+from sqlalchemy.exc import IntegrityError
 from ..schemas import UserSchema
 
 auth_bp = Blueprint("auth", __name__)
@@ -46,21 +47,29 @@ def register():
     user.password_hash = hashed
     user.role = role
 
-    db.session.add(user)
-    db.session.commit()
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "User already exists"}), 409
 
     if role == "employer":
-        employer = Employer(
-            user_id=user.id,
-            name=company_name,
-            email=email,
-            company_name=company_name,
-            phone=phone,
-            contact_person=username,
-            password_hash=hashed,
-        )
-        db.session.add(employer)
-        db.session.commit()
+        try:
+            employer = Employer(
+                user_id=user.id,
+                name=company_name,
+                email=email,
+                company_name=company_name,
+                phone=phone,
+                contact_person=username,
+                password_hash=hashed,
+            )
+            db.session.add(employer)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({"error": "Employer already exists"}), 409
 
     return jsonify({"message": "User created"}), 201
 
