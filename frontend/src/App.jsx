@@ -10,6 +10,8 @@ import Applications from "./pages/Applications";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const [health, setHealth] = useState("checking...");
@@ -86,9 +88,20 @@ function App() {
           {authed && role === "user" && (
             <Route path="/my-profile" element={<MyProfile />} />
           )}
+          <Route path="/admin-login" element={<AdminLogin />} />
+          {authed && role === "admin" && (
+            <Route path="/admin" element={<AdminDashboard />} />
+          )}
           {!authed && <Route path="/login" element={<Login />} />}
           {!authed && <Route path="/register" element={<Register />} />}
         </Routes>
+
+        <footer className="mt-6 border-t border-cyan-300/20 pt-4 text-xs text-purple-300">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span>Somedeed Platform · Admin access is monitored.</span>
+            <NavLink className="nav-link" to="/admin-login">Admin Login</NavLink>
+          </div>
+        </footer>
       </div>
     </div>
   );

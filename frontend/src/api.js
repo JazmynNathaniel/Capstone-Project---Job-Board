@@ -150,6 +150,16 @@ export function deleteEmployer(id) {
   });
 }
 
+export function listUsers() {
+  return request("/users/");
+}
+
+export function deleteUser(id) {
+  return request(`/users/${id}`, {
+    method: "DELETE"
+  });
+}
+
 export function listProfiles() {
   return request("/profiles/");
 }

@@ -5,6 +5,7 @@ from ..extensions import db
 from ..models import Job, Employer, User
 
 jobs_bp = Blueprint("jobs", __name__)
+MAX_JOBS = 100
 
 def _parse_int(value, field):
     try:
@@ -113,6 +114,8 @@ def create_job():
         return jsonify({"error": "Unauthorized"}), 401
     if user.role not in {"employer", "admin"}:
         return jsonify({"error": "Forbidden"}), 403
+    if Job.query.count() >= MAX_JOBS:
+        return jsonify({"error": "Job limit reached (100). Admin review required."}), 409
     data = request.get_json()
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400

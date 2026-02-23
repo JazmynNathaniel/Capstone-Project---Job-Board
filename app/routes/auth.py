@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 
 from ..extensions import db
-from ..models import User
+from ..models import User, Employer
 from ..schemas import UserSchema
 
 auth_bp = Blueprint("auth", __name__)
@@ -20,6 +20,8 @@ def register():
     email = data.get("email")
     password = data.get("password")
     role = data.get("role")
+    company_name = data.get("company_name")
+    phone = data.get("phone")
 
     if not username or not email or not password or not role:
         return jsonify({"error": "Missing fields"}), 400
@@ -29,6 +31,8 @@ def register():
         return jsonify({"error": "Password must be at least 8 characters"}), 400
     if role not in {"user", "employer", "admin"}:
         return jsonify({"error": "Invalid role"}), 400
+    if role == "employer" and (not company_name or not phone):
+        return jsonify({"error": "Company name and phone are required for employers"}), 400
 
     existing = User.query.filter_by(email=email).first()
     if existing:
@@ -41,12 +45,22 @@ def register():
     user.email = email
     user.password_hash = hashed
     user.role = role
-    
-    
-
 
     db.session.add(user)
     db.session.commit()
+
+    if role == "employer":
+        employer = Employer(
+            user_id=user.id,
+            name=company_name,
+            email=email,
+            company_name=company_name,
+            phone=phone,
+            contact_person=username,
+            password_hash=hashed,
+        )
+        db.session.add(employer)
+        db.session.commit()
 
     return jsonify({"message": "User created"}), 201
 
@@ -60,6 +74,8 @@ def login():
 
     email = data.get("email")
     password = data.get("password")
+    company_name = data.get("company_name")
+    phone = data.get("phone")
 
     if not email or not password:
         return jsonify({"error": "Missing fields"}), 400
@@ -70,6 +86,12 @@ def login():
 
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Invalid credentials"}), 401
+    if user.role == "employer":
+        if not company_name or not phone:
+            return jsonify({"error": "Company name and phone are required for employers"}), 400
+        employer = Employer.query.filter_by(user_id=user.id).first()
+        if not employer or employer.company_name != company_name or employer.phone != phone:
+            return jsonify({"error": "Invalid credentials"}), 401
 
     token = create_access_token(identity=user.id)
 

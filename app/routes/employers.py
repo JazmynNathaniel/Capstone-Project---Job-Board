@@ -5,6 +5,7 @@ from ..extensions import db
 from ..models import Employer, User
 
 employers_bp = Blueprint("employers", __name__)
+MAX_EMPLOYERS = 100
 
 
 def _employer_to_dict(employer):
@@ -14,6 +15,7 @@ def _employer_to_dict(employer):
         "name": employer.name,
         "email": employer.email,
         "company_name": employer.company_name,
+        "phone": employer.phone,
         "contact_person": employer.contact_person,
         "created_at": employer.created_at.isoformat() if employer.created_at else None,
     }
@@ -40,7 +42,7 @@ def create_employer():
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    required = ["user_id", "name", "email", "company_name", "contact_person", "password_hash"]
+    required = ["user_id", "name", "email", "company_name", "phone", "contact_person", "password_hash"]
     if any(not data.get(k) for k in required):
         return jsonify({"error": "Missing fields"}), 400
 
@@ -51,12 +53,15 @@ def create_employer():
         return jsonify({"error": "Forbidden"}), 403
     if user.role not in {"employer", "admin"}:
         return jsonify({"error": "Forbidden"}), 403
+    if Employer.query.count() >= MAX_EMPLOYERS:
+        return jsonify({"error": "Employer limit reached (100). Admin review required."}), 409
 
     employer = Employer(
         user_id=int(data["user_id"]),
         name=data["name"],
         email=data["email"],
         company_name=data["company_name"],
+        phone=data["phone"],
         contact_person=data["contact_person"],
         password_hash=data["password_hash"],
     )
@@ -102,7 +107,7 @@ def update_employer(employer_id):
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    for field in ["user_id", "name", "email", "company_name", "contact_person", "password_hash"]:
+    for field in ["user_id", "name", "email", "company_name", "phone", "contact_person", "password_hash"]:
         if field in data:
             value = data[field]
             if field == "user_id":
@@ -133,4 +138,3 @@ def delete_employer(employer_id):
         return jsonify({
             "error": "Cannot delete employer because it has related records (jobs/applications). Delete those first."
         }), 409
-

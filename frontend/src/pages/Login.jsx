@@ -3,14 +3,25 @@ import { loginUser, setAuthToken, setAuthRole } from "../api";
 import "./Auth.css";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    role: "user",
+    company_name: "",
+    phone: ""
+  });
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     try {
-      const data = await loginUser(form);
+      const payload = { ...form };
+      if (form.role !== "employer") {
+        delete payload.company_name;
+        delete payload.phone;
+      }
+      const data = await loginUser(payload);
       if (data.token) {
         setAuthToken(data.token);
       }
@@ -46,6 +57,32 @@ export default function Login() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
           />
+          <select
+            className="input"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          >
+            <option value="user">Candidate</option>
+            <option value="employer">Employer</option>
+          </select>
+          {form.role === "employer" && (
+            <>
+              <input
+                className="input"
+                placeholder="Company name"
+                value={form.company_name}
+                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                required
+              />
+              <input
+                className="input"
+                placeholder="Company phone"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                required
+              />
+            </>
+          )}
           <button className="btn btn-primary">Sign in</button>
         </form>
         {message && <p className="form-message">{message}</p>}

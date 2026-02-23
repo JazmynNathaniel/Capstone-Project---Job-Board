@@ -7,7 +7,9 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
-    role: "user"
+    role: "user",
+    company_name: "",
+    phone: ""
   });
   const [message, setMessage] = useState("");
 
@@ -15,9 +17,21 @@ export default function Register() {
     e.preventDefault();
     setMessage("");
     try {
-      await registerUser(form);
+      const payload = { ...form };
+      if (form.role !== "employer") {
+        delete payload.company_name;
+        delete payload.phone;
+      }
+      await registerUser(payload);
       setMessage("Account created. You can log in.");
-      setForm({ username: "", email: "", password: "", role: "user" });
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        role: "user",
+        company_name: "",
+        phone: ""
+      });
     } catch (err) {
       setMessage(err.message || "Registration failed");
     }
@@ -60,6 +74,24 @@ export default function Register() {
             <option value="user">Candidate</option>
             <option value="employer">Employer</option>
           </select>
+          {form.role === "employer" && (
+            <>
+              <input
+                className="input"
+                placeholder="Company name"
+                value={form.company_name}
+                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                required
+              />
+              <input
+                className="input"
+                placeholder="Company phone"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                required
+              />
+            </>
+          )}
           <button className="btn btn-primary">Create account</button>
         </form>
         {message && <p className="form-message">{message}</p>}
