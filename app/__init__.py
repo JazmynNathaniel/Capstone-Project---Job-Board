@@ -59,5 +59,13 @@ def create_app():
             if os.path.exists(file_path):
                 return send_from_directory(dist_dir, path)
             return send_from_directory(dist_dir, "index.html")
+    else:
+        @app.get("/")
+        def api_root():
+            return jsonify({
+                "message": "Frontend build not found. Run `npm run build` in frontend/.",
+                "health": "/health",
+                "jobs": "/jobs/"
+            }), 200
 
     return app
