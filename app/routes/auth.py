@@ -83,8 +83,6 @@ def login():
 
     email = data.get("email")
     password = data.get("password")
-    company_name = data.get("company_name")
-    phone = data.get("phone")
 
     if not email or not password:
         return jsonify({"error": "Missing fields"}), 400
@@ -95,12 +93,6 @@ def login():
 
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Invalid credentials"}), 401
-    if user.role == "employer":
-        if not company_name or not phone:
-            return jsonify({"error": "Company name and phone are required for employers"}), 400
-        employer = Employer.query.filter_by(user_id=user.id).first()
-        if not employer or employer.company_name != company_name or employer.phone != phone:
-            return jsonify({"error": "Invalid credentials"}), 401
 
     token = create_access_token(identity=user.id)
 
