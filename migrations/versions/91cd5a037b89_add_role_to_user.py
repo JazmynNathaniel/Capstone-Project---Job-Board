@@ -8,6 +8,7 @@ Create Date: 2026-02-18 09:19:15.426737
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 
 
 # revision identifiers, used by Alembic.
@@ -32,15 +33,23 @@ def upgrade():
 
     if not _has_column("users", "role"):
         # Add role with a server default to avoid non-null errors on existing rows.
-        with op.batch_alter_table('users', schema=None) as batch_op:
-            batch_op.add_column(sa.Column('role', sa.String(length=20), nullable=False, server_default='user'))
+        try:
+            with op.batch_alter_table('users', schema=None) as batch_op:
+                batch_op.add_column(sa.Column('role', sa.String(length=20), nullable=False, server_default='user'))
+        except OperationalError as exc:
+            if "duplicate column name: role" not in str(exc):
+                raise
 
     # Add user_id to employers. Keep nullable to avoid failures on existing rows.
     if not _has_column("employers", "user_id"):
-        with op.batch_alter_table('employers', schema=None) as batch_op:
-            batch_op.add_column(sa.Column('user_id', sa.Integer(), nullable=True))
-            if bind.dialect.name != "sqlite":
-                batch_op.create_foreign_key('fk_employers_user_id_users', 'users', ['user_id'], ['id'])
+        try:
+            with op.batch_alter_table('employers', schema=None) as batch_op:
+                batch_op.add_column(sa.Column('user_id', sa.Integer(), nullable=True))
+                if bind.dialect.name != "sqlite":
+                    batch_op.create_foreign_key('fk_employers_user_id_users', 'users', ['user_id'], ['id'])
+        except OperationalError as exc:
+            if "duplicate column name: user_id" not in str(exc):
+                raise
 
 
 def downgrade():
