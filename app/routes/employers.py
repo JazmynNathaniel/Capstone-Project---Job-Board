@@ -15,6 +15,7 @@ def _employer_to_dict(employer):
         "name": employer.name,
         "email": employer.email,
         "company_name": employer.company_name,
+        "location": employer.location,
         "phone": employer.phone,
         "contact_person": employer.contact_person,
         "created_at": employer.created_at.isoformat() if employer.created_at else None,
@@ -26,12 +27,9 @@ def list_employers():
     user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    if user.role == "admin":
-        employers = Employer.query.all()
-    elif user.role == "employer":
-        employers = Employer.query.filter_by(user_id=user.id).all()
-    else:
+    if user.role != "admin":
         return jsonify({"error": "Forbidden"}), 403
+    employers = Employer.query.all()
     return jsonify([_employer_to_dict(e) for e in employers]), 200
 
 
@@ -42,7 +40,7 @@ def create_employer():
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    required = ["user_id", "name", "email", "company_name", "phone", "contact_person", "password_hash"]
+    required = ["user_id", "name", "email", "company_name", "location", "phone", "contact_person", "password_hash"]
     if any(not data.get(k) for k in required):
         return jsonify({"error": "Missing fields"}), 400
 
@@ -61,6 +59,7 @@ def create_employer():
         name=data["name"],
         email=data["email"],
         company_name=data["company_name"],
+        location=data.get("location"),
         phone=data["phone"],
         contact_person=data["contact_person"],
         password_hash=data["password_hash"],
@@ -79,11 +78,8 @@ def get_employer(employer_id):
     user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    if user.role == "admin":
-        return jsonify(_employer_to_dict(employer)), 200
-    if user.role == "employer" and employer.user_id == user.id:
-        return jsonify(_employer_to_dict(employer)), 200
-    return jsonify({"error": "Forbidden"}), 403
+    if user.role != "admin":
+        return jsonify({"error": "Forbidden"}), 403
     return jsonify(_employer_to_dict(employer)), 200
 
 
@@ -107,12 +103,91 @@ def update_employer(employer_id):
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    for field in ["user_id", "name", "email", "company_name", "phone", "contact_person", "password_hash"]:
+    for field in ["user_id", "name", "email", "company_name", "location", "phone", "contact_person", "password_hash"]:
         if field in data:
             value = data[field]
             if field == "user_id":
                 value = int(value)
             setattr(employer, field, value)
+
+@employers_bp.route("/me", methods=["GET"])
+@jwt_required()
+def get_my_employer():
+    user = User.query.get(int(get_jwt_identity()))
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role != "employer":
+        return jsonify({"error": "Forbidden"}), 403
+    employer = Employer.query.filter_by(user_id=user.id).first()
+    if not employer:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(_employer_to_dict(employer)), 200
+
+
+@employers_bp.route("/me", methods=["POST"])
+@jwt_required()
+def create_my_employer():
+    user = User.query.get(int(get_jwt_identity()))
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role != "employer":
+        return jsonify({"error": "Forbidden"}), 403
+
+    existing = Employer.query.filter_by(user_id=user.id).first()
+    if existing:
+        return jsonify({"error": "Employer profile already exists"}), 400
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    required = ["company_name", "location", "email", "phone", "contact_person"]
+    if any(not data.get(k) for k in required):
+        return jsonify({"error": "Missing fields"}), 400
+
+    employer = Employer(
+        user_id=user.id,
+        name=data.get("company_name"),
+        email=data["email"],
+        company_name=data["company_name"],
+        location=data.get("location"),
+        phone=data["phone"],
+        contact_person=data["contact_person"],
+        password_hash=user.password_hash,
+    )
+    db.session.add(employer)
+    db.session.commit()
+    return jsonify(_employer_to_dict(employer)), 201
+
+
+@employers_bp.route("/me", methods=["PUT"])
+@jwt_required()
+def update_my_employer():
+    user = User.query.get(int(get_jwt_identity()))
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    if user.role != "employer":
+        return jsonify({"error": "Forbidden"}), 403
+
+    employer = Employer.query.filter_by(user_id=user.id).first()
+    if not employer:
+        return jsonify({"error": "Not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    for field in ["company_name", "location", "phone", "contact_person", "email"]:
+        if field in data:
+            value = data[field]
+            if value in (None, ""):
+                return jsonify({"error": f"Invalid {field}"}), 400
+            setattr(employer, field, value)
+            if field == "company_name":
+                employer.name = value
+
+    db.session.commit()
+    return jsonify(_employer_to_dict(employer)), 200
 
     db.session.commit()
     return jsonify(_employer_to_dict(employer)), 200
