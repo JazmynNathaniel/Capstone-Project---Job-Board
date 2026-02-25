@@ -11,8 +11,6 @@ export default function Employers() {
     name: "",
     email: "",
     company_name: "",
-    location: "",
-    phone: "",
     contact_person: "",
     password_hash: ""
   });
@@ -22,8 +20,6 @@ export default function Employers() {
     name: "",
     email: "",
     company_name: "",
-    location: "",
-    phone: "",
     contact_person: "",
     password_hash: ""
   });
@@ -54,8 +50,6 @@ export default function Employers() {
         name: "",
         email: "",
         company_name: "",
-        location: "",
-        phone: "",
         contact_person: "",
         password_hash: ""
       });
@@ -75,8 +69,6 @@ export default function Employers() {
       if (updateForm.name) payload.name = updateForm.name;
       if (updateForm.email) payload.email = updateForm.email;
       if (updateForm.company_name) payload.company_name = updateForm.company_name;
-      if (updateForm.location) payload.location = updateForm.location;
-      if (updateForm.phone) payload.phone = updateForm.phone;
       if (updateForm.contact_person) payload.contact_person = updateForm.contact_person;
       if (updateForm.password_hash) payload.password_hash = updateForm.password_hash;
       await updateEmployer(updateForm.id, payload);
@@ -87,8 +79,6 @@ export default function Employers() {
         name: "",
         email: "",
         company_name: "",
-        location: "",
-        phone: "",
         contact_person: "",
         password_hash: ""
       });
@@ -160,20 +150,6 @@ export default function Employers() {
           />
           <input
             className="input"
-            placeholder="Location"
-            value={createForm.location}
-            onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
-            required
-          />
-          <input
-            className="input"
-            placeholder="Phone"
-            value={createForm.phone}
-            onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-            required
-          />
-          <input
-            className="input"
             placeholder="Contact Person"
             value={createForm.contact_person}
             onChange={(e) => setCreateForm({ ...createForm, contact_person: e.target.value })}
@@ -226,18 +202,6 @@ export default function Employers() {
           />
           <input
             className="input"
-            placeholder="Location"
-            value={updateForm.location}
-            onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Phone"
-            value={updateForm.phone}
-            onChange={(e) => setUpdateForm({ ...updateForm, phone: e.target.value })}
-          />
-          <input
-            className="input"
             placeholder="Contact Person"
             value={updateForm.contact_person}
             onChange={(e) => setUpdateForm({ ...updateForm, contact_person: e.target.value })}
@@ -277,7 +241,6 @@ export default function Employers() {
             </div>
             <div className="employer-meta">
               <p>Contact: {company.contact_person}</p>
-              {company.location && <p>Location: {company.location}</p>}
               <p>{company.email}</p>
             </div>
             <button className="btn btn-ghost">View Jobs</button>

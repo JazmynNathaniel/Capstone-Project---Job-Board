@@ -12,7 +12,6 @@ import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import MyEmployer from "./pages/MyEmployer";
 
 function App() {
   const [authed, setAuthed] = useState(!!getAuthToken());
@@ -43,7 +42,7 @@ function App() {
           <nav className="flex flex-wrap gap-3 text-sm">
             <NavLink className="nav-link" to="/">Home</NavLink>
             {authed && <NavLink className="nav-link" to="/jobs">Jobs</NavLink>}
-            {authed && role === "admin" && (
+            {authed && (role === "employer" || role === "admin") && (
               <NavLink className="nav-link" to="/employers">Employers</NavLink>
             )}
             {authed && role === "admin" && (
@@ -52,9 +51,6 @@ function App() {
             {authed && <NavLink className="nav-link" to="/applications">Applications</NavLink>}
             {authed && role === "user" && (
               <NavLink className="nav-link" to="/my-profile">My Profile</NavLink>
-            )}
-            {authed && role === "employer" && (
-              <NavLink className="nav-link" to="/my-employer">My Employer</NavLink>
             )}
             {!authed && <NavLink className="nav-link" to="/login">Login</NavLink>}
             {!authed && <NavLink className="nav-link" to="/register">Register</NavLink>}
@@ -66,7 +62,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           {authed && <Route path="/jobs" element={<Jobs />} />}
-          {authed && role === "admin" && (
+          {authed && (role === "employer" || role === "admin") && (
             <Route path="/employers" element={<Employers />} />
           )}
           {authed && role === "admin" && (
@@ -75,9 +71,6 @@ function App() {
           {authed && <Route path="/applications" element={<Applications />} />}
           {authed && role === "user" && (
             <Route path="/my-profile" element={<MyProfile />} />
-          )}
-          {authed && role === "employer" && (
-            <Route path="/my-employer" element={<MyEmployer />} />
           )}
           <Route path="/admin-login" element={<AdminLogin />} />
           {authed && role === "admin" && (

@@ -150,24 +150,6 @@ export function deleteEmployer(id) {
   });
 }
 
-export function getMyEmployer() {
-  return request("/employers/me");
-}
-
-export function createMyEmployer(payload) {
-  return request("/employers/me", {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
-}
-
-export function updateMyEmployer(payload) {
-  return request("/employers/me", {
-    method: "PUT",
-    body: JSON.stringify(payload)
-  });
-}
-
 export function listUsers() {
   return request("/users/");
 }
