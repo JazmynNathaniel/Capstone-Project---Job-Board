@@ -27,9 +27,12 @@ def list_employers():
     user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    if user.role != "admin":
+    if user.role == "admin":
+        employers = Employer.query.all()
+    elif user.role == "employer":
+        employers = Employer.query.filter_by(user_id=user.id).all()
+    else:
         return jsonify({"error": "Forbidden"}), 403
-    employers = Employer.query.all()
     return jsonify([_employer_to_dict(e) for e in employers]), 200
 
 
@@ -78,9 +81,11 @@ def get_employer(employer_id):
     user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    if user.role != "admin":
-        return jsonify({"error": "Forbidden"}), 403
-    return jsonify(_employer_to_dict(employer)), 200
+    if user.role == "admin":
+        return jsonify(_employer_to_dict(employer)), 200
+    if user.role == "employer" and employer.user_id == user.id:
+        return jsonify(_employer_to_dict(employer)), 200
+    return jsonify({"error": "Forbidden"}), 403
 
 
 @employers_bp.route("/<int:employer_id>", methods=["PUT"])
