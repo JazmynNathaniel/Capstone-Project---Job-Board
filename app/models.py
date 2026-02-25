@@ -90,6 +90,13 @@ class Profile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.Text, nullable=True)
+    job_experience = db.Column(db.Text, nullable=True)
+    current_position = db.Column(db.String(120), nullable=True)
+    current_position_start = db.Column(db.String(20), nullable=True)
+    last_position = db.Column(db.String(120), nullable=True)
+    last_position_start = db.Column(db.String(20), nullable=True)
+    last_position_end = db.Column(db.String(20), nullable=True)
+    skills = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship(
         "User",

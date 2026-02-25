@@ -23,15 +23,7 @@ export default function Register() {
         delete payload.phone;
       }
       await registerUser(payload);
-      setMessage("Account created. You can log in.");
-      setForm({
-        username: "",
-        email: "",
-        password: "",
-        role: "user",
-        company_name: "",
-        phone: ""
-      });
+      window.location.assign("/login");
     } catch (err) {
       setMessage(err.message || "Registration failed");
     }

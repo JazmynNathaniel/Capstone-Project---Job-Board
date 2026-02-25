@@ -19,6 +19,13 @@ def _profile_to_dict(profile):
         "user_id": profile.user_id,
         "full_name": profile.full_name,
         "bio": profile.bio,
+        "job_experience": profile.job_experience,
+        "current_position": profile.current_position,
+        "current_position_start": profile.current_position_start,
+        "last_position": profile.last_position,
+        "last_position_start": profile.last_position_start,
+        "last_position_end": profile.last_position_end,
+        "skills": profile.skills,
         "created_at": profile.created_at.isoformat() if profile.created_at else None,
     }
 
@@ -62,6 +69,13 @@ def create_profile():
     profile.user_id = user_id
     profile.full_name = data["full_name"]
     profile.bio = data.get("bio")
+    profile.job_experience = data.get("job_experience")
+    profile.current_position = data.get("current_position")
+    profile.current_position_start = data.get("current_position_start")
+    profile.last_position = data.get("last_position")
+    profile.last_position_start = data.get("last_position_start")
+    profile.last_position_end = data.get("last_position_end")
+    profile.skills = data.get("skills")
 
     db.session.add(profile)
     db.session.commit()
@@ -104,7 +118,18 @@ def update_profile(profile_id):
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    for field in ["user_id", "full_name", "bio"]:
+    for field in [
+        "user_id",
+        "full_name",
+        "bio",
+        "job_experience",
+        "current_position",
+        "current_position_start",
+        "last_position",
+        "last_position_start",
+        "last_position_end",
+        "skills",
+    ]:
         if field in data:
             value = data[field]
             if field == "user_id":
@@ -172,7 +197,18 @@ def create_my_profile():
     if not full_name:
         return jsonify({"error": "Missing full_name"}), 400
 
-    profile = Profile(user_id=user.id, full_name=full_name, bio=data.get("bio"))
+    profile = Profile(
+        user_id=user.id,
+        full_name=full_name,
+        bio=data.get("bio"),
+        job_experience=data.get("job_experience"),
+        current_position=data.get("current_position"),
+        current_position_start=data.get("current_position_start"),
+        last_position=data.get("last_position"),
+        last_position_start=data.get("last_position_start"),
+        last_position_end=data.get("last_position_end"),
+        skills=data.get("skills"),
+    )
     db.session.add(profile)
     db.session.commit()
     return jsonify(_profile_to_dict(profile)), 201
@@ -194,7 +230,17 @@ def update_my_profile():
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    for field in ["full_name", "bio"]:
+    for field in [
+        "full_name",
+        "bio",
+        "job_experience",
+        "current_position",
+        "current_position_start",
+        "last_position",
+        "last_position_start",
+        "last_position_end",
+        "skills",
+    ]:
         if field in data:
             value = data[field]
             if value in (None, ""):

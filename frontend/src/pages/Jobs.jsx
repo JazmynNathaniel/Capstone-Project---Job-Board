@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { listJobs, createJob, updateJob, deleteJob } from "../api";
+import { listJobs, createJob, updateJob, deleteJob, getAuthRole } from "../api";
 import "./Jobs.css";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const role = getAuthRole();
+  const canManageJobs = role === "employer" || role === "admin";
   const [filters, setFilters] = useState({
     query: "",
     location: "",
@@ -143,7 +145,7 @@ export default function Jobs() {
           <h1 className="title">Open roles</h1>
           <p className="subtitle">Search, filter, and create roles.</p>
         </div>
-        <button className="btn btn-primary">Post a Job</button>
+        {canManageJobs && <button className="btn btn-primary">Post a Job</button>}
       </header>
 
       <section className="filter-bar">
@@ -196,107 +198,109 @@ export default function Jobs() {
       {error && <div className="error-banner">{error}</div>}
       {message && <div className="success-banner">{message}</div>}
 
-      <section className="form-grid">
-        <form className="form-card" onSubmit={handleCreate}>
-          <h3>Create Job</h3>
-          <input
-            className="input"
-            placeholder="Title"
-            value={createForm.title}
-            onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
-            required
-          />
-          <input
-            className="input"
-            placeholder="Location"
-            value={createForm.location}
-            onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
-            required
-          />
-          <input
-            className="input"
-            placeholder="Salary"
-            type="number"
-            value={createForm.salary}
-            onChange={(e) => setCreateForm({ ...createForm, salary: e.target.value })}
-            required
-          />
-          <input
-            className="input"
-            placeholder="Employer ID"
-            type="number"
-            value={createForm.employer_id}
-            onChange={(e) => setCreateForm({ ...createForm, employer_id: e.target.value })}
-            required
-          />
-          <textarea
-            className="input textarea"
-            placeholder="Description"
-            value={createForm.description}
-            onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-            required
-          />
-          <button className="btn btn-primary">Create</button>
-        </form>
+      {canManageJobs && (
+        <section className="form-grid">
+          <form className="form-card" onSubmit={handleCreate}>
+            <h3>Create Job</h3>
+            <input
+              className="input"
+              placeholder="Title"
+              value={createForm.title}
+              onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
+              required
+            />
+            <input
+              className="input"
+              placeholder="Location"
+              value={createForm.location}
+              onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
+              required
+            />
+            <input
+              className="input"
+              placeholder="Salary"
+              type="number"
+              value={createForm.salary}
+              onChange={(e) => setCreateForm({ ...createForm, salary: e.target.value })}
+              required
+            />
+            <input
+              className="input"
+              placeholder="Employer ID"
+              type="number"
+              value={createForm.employer_id}
+              onChange={(e) => setCreateForm({ ...createForm, employer_id: e.target.value })}
+              required
+            />
+            <textarea
+              className="input textarea"
+              placeholder="Description"
+              value={createForm.description}
+              onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+              required
+            />
+            <button className="btn btn-primary">Create</button>
+          </form>
 
-        <form className="form-card" onSubmit={handleUpdate}>
-          <h3>Update Job</h3>
-          <input
-            className="input"
-            placeholder="Job ID"
-            type="number"
-            value={updateForm.id}
-            onChange={(e) => setUpdateForm({ ...updateForm, id: e.target.value })}
-            required
-          />
-          <input
-            className="input"
-            placeholder="Title"
-            value={updateForm.title}
-            onChange={(e) => setUpdateForm({ ...updateForm, title: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Location"
-            value={updateForm.location}
-            onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Salary"
-            type="number"
-            value={updateForm.salary}
-            onChange={(e) => setUpdateForm({ ...updateForm, salary: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Employer ID"
-            type="number"
-            value={updateForm.employer_id}
-            onChange={(e) => setUpdateForm({ ...updateForm, employer_id: e.target.value })}
-          />
-          <textarea
-            className="input textarea"
-            placeholder="Description"
-            value={updateForm.description}
-            onChange={(e) => setUpdateForm({ ...updateForm, description: e.target.value })}
-          />
-          <button className="btn btn-ghost">Update</button>
-        </form>
+          <form className="form-card" onSubmit={handleUpdate}>
+            <h3>Update Job</h3>
+            <input
+              className="input"
+              placeholder="Job ID"
+              type="number"
+              value={updateForm.id}
+              onChange={(e) => setUpdateForm({ ...updateForm, id: e.target.value })}
+              required
+            />
+            <input
+              className="input"
+              placeholder="Title"
+              value={updateForm.title}
+              onChange={(e) => setUpdateForm({ ...updateForm, title: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Location"
+              value={updateForm.location}
+              onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Salary"
+              type="number"
+              value={updateForm.salary}
+              onChange={(e) => setUpdateForm({ ...updateForm, salary: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Employer ID"
+              type="number"
+              value={updateForm.employer_id}
+              onChange={(e) => setUpdateForm({ ...updateForm, employer_id: e.target.value })}
+            />
+            <textarea
+              className="input textarea"
+              placeholder="Description"
+              value={updateForm.description}
+              onChange={(e) => setUpdateForm({ ...updateForm, description: e.target.value })}
+            />
+            <button className="btn btn-ghost">Update</button>
+          </form>
 
-        <form className="form-card" onSubmit={handleDelete}>
-          <h3>Delete Job</h3>
-          <input
-            className="input"
-            placeholder="Job ID"
-            type="number"
-            value={deleteId}
-            onChange={(e) => setDeleteId(e.target.value)}
-            required
-          />
-          <button className="btn btn-danger">Delete</button>
-        </form>
-      </section>
+          <form className="form-card" onSubmit={handleDelete}>
+            <h3>Delete Job</h3>
+            <input
+              className="input"
+              placeholder="Job ID"
+              type="number"
+              value={deleteId}
+              onChange={(e) => setDeleteId(e.target.value)}
+              required
+            />
+            <button className="btn btn-danger">Delete</button>
+          </form>
+        </section>
+      )}
 
       <section className="card-grid">
         {jobs.map((job) => (
