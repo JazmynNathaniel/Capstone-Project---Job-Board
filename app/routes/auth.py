@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token
 from ..extensions import db
 from ..models import User, Employer
 from sqlalchemy.exc import IntegrityError
+import os
 from ..schemas import UserSchema
 
 auth_bp = Blueprint("auth", __name__)
@@ -129,6 +130,52 @@ def admin_login():
         "user_id": user.id,
         "role": user.role
     })
+
+
+# ADMIN BOOTSTRAP (env-gated)
+@auth_bp.route("/bootstrap-admin", methods=["POST"])
+def bootstrap_admin():
+    if os.getenv("ADMIN_BOOTSTRAP_ENABLED", "").lower() != "true":
+        return jsonify({"error": "Bootstrap disabled"}), 403
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    token = data.get("token")
+    email = data.get("email")
+    password = data.get("password")
+    username = data.get("username", "Administrator")
+
+    expected = os.getenv("ADMIN_BOOTSTRAP_TOKEN")
+    if not expected or token != expected:
+        return jsonify({"error": "Invalid bootstrap token"}), 403
+    if not email or not password:
+        return jsonify({"error": "Missing fields"}), 400
+    if "@" not in email:
+        return jsonify({"error": "Invalid email"}), 400
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
+
+    hashed = generate_password_hash(password)
+    existing = User.query.filter_by(email=email).first()
+    if existing:
+        existing.password_hash = hashed
+        existing.role = "admin"
+        if username:
+            existing.username = username
+        db.session.commit()
+        return jsonify({"message": "Admin reset"}), 200
+
+    user = User(
+        username=username,
+        email=email,
+        password_hash=hashed,
+        role="admin",
+    )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({"message": "Admin created"}), 201
 
 
 # LOGOUT
