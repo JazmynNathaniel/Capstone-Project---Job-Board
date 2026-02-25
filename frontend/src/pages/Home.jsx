@@ -7,14 +7,14 @@ export default function Home() {
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">Somedeed Job Board</p>
-          <h1 className="title">Find your next role. Hire your next team.</h1>
+          <h1 className="title">Find your next role, or Hire your next team!</h1>
           <p className="subtitle">
-            A capstone-ready platform for jobs, profiles, applications, and
-            employers. Build from this foundation and ship fast.
+            A small scale platform for jobs, profiles, applications, and
+            employers. 
           </p>
           <div className="actions">
-            <Link className="btn btn-primary" to="/jobs">Browse Jobs</Link>
-            <Link className="btn btn-ghost" to="/register">Create Account</Link>
+            <Link className="btn btn-primary" to="/login">Login To Browse Jobs</Link>
+            <Link className="btn btn-ghost" to="/register">Create An Account</Link>
           </div>
         </div>
         <div className="hero-panel">
@@ -39,7 +39,7 @@ export default function Home() {
           <p>Post and manage roles with salary, location, and descriptions.</p>
         </article>
         <article className="feature-card">
-          <h3>Profiles</h3>
+          <h3>Job Seekers</h3>
           <p>Build candidate profiles with bios and role history.</p>
         </article>
         <article className="feature-card">
@@ -48,7 +48,7 @@ export default function Home() {
         </article>
         <article className="feature-card">
           <h3>Employers</h3>
-          <p>Organize companies and contact points for recruiting.</p>
+          <p>Organize companies and contact points for recruiting candidates.</p>
         </article>
       </section>
     </main>
