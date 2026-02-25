@@ -61,6 +61,22 @@ def create_app():
             if os.path.exists(file_path):
                 return send_from_directory(dist_dir, path)
             return send_from_directory(dist_dir, "index.html")
+
+        @app.errorhandler(404)
+        def spa_fallback(_):
+            api_prefixes = (
+                "/auth",
+                "/jobs",
+                "/applications",
+                "/profiles",
+                "/employers",
+                "/users",
+                "/adzuna",
+                "/health",
+            )
+            if request.path.startswith(api_prefixes) or request.path.startswith("/assets"):
+                return jsonify({"error": "Not found"}), 404
+            return send_from_directory(dist_dir, "index.html")
     else:
         @app.get("/")
         def api_root():
