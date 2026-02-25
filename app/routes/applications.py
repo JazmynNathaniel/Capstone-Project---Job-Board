@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
-from ..models import Application, Job, User
+from ..models import Application, Job, User, Employer
 
 applications_bp = Blueprint("applications", __name__)
 
