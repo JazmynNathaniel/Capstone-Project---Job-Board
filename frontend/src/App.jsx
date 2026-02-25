@@ -13,6 +13,7 @@ import MyProfile from "./pages/MyProfile";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import MyEmployer from "./pages/MyEmployer";
+import MySavedJobs from "./pages/MySavedJobs";
 
 function App() {
   const [authed, setAuthed] = useState(!!getAuthToken());
@@ -53,6 +54,9 @@ function App() {
             {authed && role === "user" && (
               <NavLink className="nav-link" to="/my-profile">My Profile</NavLink>
             )}
+            {authed && role === "user" && (
+              <NavLink className="nav-link" to="/my-saved-jobs">My Saved Jobs</NavLink>
+            )}
             {authed && role === "employer" && (
               <NavLink className="nav-link" to="/my-employer">My Employer</NavLink>
             )}
@@ -75,6 +79,9 @@ function App() {
           {authed && <Route path="/applications" element={<Applications />} />}
           {authed && role === "user" && (
             <Route path="/my-profile" element={<MyProfile />} />
+          )}
+          {authed && role === "user" && (
+            <Route path="/my-saved-jobs" element={<MySavedJobs />} />
           )}
           {authed && role === "employer" && (
             <Route path="/my-employer" element={<MyEmployer />} />

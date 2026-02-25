@@ -1,0 +1,71 @@
+.page-saved-jobs {
+  @apply flex flex-col gap-8;
+}
+
+.page-saved-jobs .page-header {
+  @apply flex flex-col gap-4;
+}
+
+.page-saved-jobs .eyebrow {
+  @apply text-xs uppercase tracking-[0.3em] text-cyan-300;
+}
+
+.page-saved-jobs .title {
+  @apply mt-2 text-3xl font-semibold text-white;
+}
+
+.page-saved-jobs .subtitle {
+  @apply mt-2 text-purple-200;
+}
+
+.card-grid {
+  @apply grid gap-4 md:grid-cols-2;
+}
+
+.job-card {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/50 p-4 md:p-6;
+}
+
+.job-head {
+  @apply flex items-start justify-between gap-4;
+}
+
+.job-head h3 {
+  @apply text-lg font-semibold text-white;
+}
+
+.job-head p {
+  @apply text-sm text-purple-300;
+}
+
+.pill {
+  @apply rounded-full bg-purple-900 px-3 py-1 text-xs text-cyan-200;
+}
+
+.job-desc {
+  @apply mt-3 text-sm text-purple-200;
+}
+
+.job-meta {
+  @apply mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-purple-400;
+}
+
+.btn {
+  @apply mt-4 rounded-full px-4 py-2 text-sm font-semibold transition;
+}
+
+.btn-ghost {
+  @apply border border-slate-700 text-slate-200 hover:border-cyan-300 hover:text-cyan-200;
+}
+
+.error-banner {
+  @apply rounded-xl border border-fuchsia-400/50 bg-fuchsia-400/10 p-4 text-sm text-fuchsia-200;
+}
+
+.success-banner {
+  @apply rounded-xl border border-cyan-300/50 bg-cyan-300/10 p-4 text-sm text-cyan-200;
+}
+
+.empty-card {
+  @apply rounded-2xl border border-dashed border-cyan-300/30 bg-purple-950/40 p-4 md:p-6 text-purple-200;
+}

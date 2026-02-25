@@ -107,3 +107,28 @@ class Profile(db.Model):
     
     def __repr__(self):
         return f'<Profile {self.full_name}>'
+
+class SavedJob(db.Model):
+    __tablename__ = 'saved_jobs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship(
+        "User",
+        backref=db.backref("saved_jobs", lazy=True, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
+    job = db.relationship(
+        "Job",
+        backref=db.backref("saved_by", lazy=True, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "job_id", name="uq_saved_jobs_user_job"),
+    )
+
+    def __repr__(self):
+        return f'<SavedJob {self.user_id} - Job {self.job_id}>'

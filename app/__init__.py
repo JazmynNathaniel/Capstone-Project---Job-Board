@@ -36,7 +36,7 @@ def create_app():
         from . import models
         db.create_all() #this creates the tables in the database based on the models defined in app/models.py.
     # register blueprints
-    from .routes import auth_bp, jobs_bp, applications_bp, profiles_bp, employers_bp, users_bp, adzuna_bp
+    from .routes import auth_bp, jobs_bp, applications_bp, profiles_bp, employers_bp, users_bp, adzuna_bp, saved_jobs_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(jobs_bp, url_prefix="/jobs")
@@ -45,6 +45,7 @@ def create_app():
     app.register_blueprint(employers_bp, url_prefix="/employers")
     app.register_blueprint(users_bp, url_prefix="/users")
     app.register_blueprint(adzuna_bp, url_prefix="/adzuna")
+    app.register_blueprint(saved_jobs_bp, url_prefix="/saved-jobs")
 
     @app.get("/health")
     def health():
@@ -72,6 +73,7 @@ def create_app():
                 "/employers",
                 "/users",
                 "/adzuna",
+                "/saved-jobs",
                 "/health",
             )
             if request.path.startswith(api_prefixes) or request.path.startswith("/assets"):

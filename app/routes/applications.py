@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
-from ..models import Application, Job, Employer, User
+from ..models import Application, Job, User
 
 applications_bp = Blueprint("applications", __name__)
 
@@ -51,21 +51,15 @@ def create_application():
     user = User.query.get(int(get_jwt_identity()))
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    if user.role != "employer":
+    if user.role != "user":
         return jsonify({"error": "Forbidden"}), 403
 
-    employer = Employer.query.filter_by(user_id=user.id).first()
-    if not employer:
-        return jsonify({"error": "Employer profile required"}), 400
-
-    user_id = int(data["user_id"])
     job_id = int(data["job_id"])
-    job = Job.query.get(job_id)
-    if not job or job.employer_id != employer.id:
-        return jsonify({"error": "Forbidden"}), 403
+    if not Job.query.get(job_id):
+        return jsonify({"error": "Job not found"}), 404
 
     application = Application(
-        user_id=user_id,
+        user_id=user.id,
         job_id=job_id,
         status="pending",
     )

@@ -150,6 +150,23 @@ export function deleteEmployer(id) {
   });
 }
 
+export function listSavedJobs() {
+  return request("/saved-jobs/");
+}
+
+export function saveJob(job_id) {
+  return request("/saved-jobs/", {
+    method: "POST",
+    body: JSON.stringify({ job_id })
+  });
+}
+
+export function unsaveJob(job_id) {
+  return request(`/saved-jobs/${job_id}`, {
+    method: "DELETE"
+  });
+}
+
 export function getMyEmployer() {
   return request("/employers/me");
 }

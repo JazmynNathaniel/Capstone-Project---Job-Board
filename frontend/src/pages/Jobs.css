@@ -74,6 +74,10 @@
   @apply mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-purple-400;
 }
 
+.job-actions {
+  @apply mt-4 flex flex-wrap gap-2;
+}
+
 .error-banner {
   @apply rounded-xl border border-fuchsia-400/50 bg-fuchsia-400/10 p-4 text-sm text-fuchsia-200;
 }

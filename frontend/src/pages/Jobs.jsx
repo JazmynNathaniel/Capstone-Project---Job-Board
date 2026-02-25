@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
-import { listJobs, createJob, updateJob, deleteJob, getAuthRole } from "../api";
+import { useNavigate } from "react-router-dom";
+import {
+  listJobs,
+  createJob,
+  updateJob,
+  deleteJob,
+  getAuthRole,
+  listSavedJobs,
+  saveJob,
+  unsaveJob
+} from "../api";
 import "./Jobs.css";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [savedIds, setSavedIds] = useState(new Set());
+  const navigate = useNavigate();
   const role = getAuthRole();
   const canManageJobs = role === "employer" || role === "admin";
+  const canSaveApply = role === "user";
   const [filters, setFilters] = useState({
     query: "",
     location: "",
@@ -56,6 +69,14 @@ export default function Jobs() {
 
   useEffect(() => {
     refresh();
+    if (canSaveApply) {
+      listSavedJobs()
+        .then((data) => {
+          const ids = new Set((data || []).map((s) => s.job_id));
+          setSavedIds(ids);
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const handleFilter = () => {
@@ -135,6 +156,32 @@ export default function Jobs() {
     } catch (err) {
       setError(err.message || "Failed to delete job");
     }
+  };
+
+  const handleSaveToggle = async (jobId) => {
+    setError("");
+    setMessage("");
+    try {
+      if (savedIds.has(jobId)) {
+        await unsaveJob(jobId);
+        const next = new Set(savedIds);
+        next.delete(jobId);
+        setSavedIds(next);
+        setMessage("Removed from saved jobs.");
+      } else {
+        await saveJob(jobId);
+        const next = new Set(savedIds);
+        next.add(jobId);
+        setSavedIds(next);
+        setMessage("Saved job.");
+      }
+    } catch (err) {
+      setError(err.message || "Failed to save job");
+    }
+  };
+
+  const handleApply = (jobId) => {
+    navigate(`/applications?job_id=${jobId}`);
   };
 
   return (
@@ -319,6 +366,16 @@ export default function Jobs() {
               <span>Employer #{job.employer_id}</span>
               <span>Job ID {job.id}</span>
             </div>
+            {canSaveApply && (
+              <div className="job-actions">
+                <button className="btn btn-ghost" onClick={() => handleSaveToggle(job.id)}>
+                  {savedIds.has(job.id) ? "Saved" : "Save"}
+                </button>
+                <button className="btn btn-primary" onClick={() => handleApply(job.id)}>
+                  Apply here
+                </button>
+              </div>
+            )}
           </article>
         ))}
         {jobs.length === 0 && !error && (

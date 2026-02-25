@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   listApplications,
   createApplication,
@@ -12,14 +13,14 @@ export default function Applications() {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const role = getAuthRole();
-  const canCreate = role === "employer";
+  const canCreate = role === "user";
   const canUpdate = role === "employer" || role === "admin";
   const canDelete = role === "admin";
   const [createForm, setCreateForm] = useState({
-    user_id: "",
-    job_id: "",
-    status: "pending"
+    job_id: ""
   });
   const [updateForm, setUpdateForm] = useState({
     id: "",
@@ -37,6 +38,10 @@ export default function Applications() {
 
   useEffect(() => {
     refresh();
+    const jobId = searchParams.get("job_id");
+    if (jobId) {
+      setCreateForm((prev) => ({ ...prev, job_id: jobId }));
+    }
   }, []);
 
   const grouped = useMemo(() => {
@@ -53,12 +58,10 @@ export default function Applications() {
     setMessage("");
     try {
       await createApplication({
-        ...createForm,
-        user_id: Number(createForm.user_id),
         job_id: Number(createForm.job_id)
       });
       setMessage("Application created.");
-      setCreateForm({ user_id: "", job_id: "", status: "pending" });
+      setCreateForm({ job_id: "" });
       refresh();
     } catch (err) {
       setError(err.message || "Failed to create application");
@@ -105,7 +108,11 @@ export default function Applications() {
           <h1 className="title">Track candidate flow</h1>
           <p className="subtitle">Monitor pipeline status and progress.</p>
         </div>
-        {canCreate && <button className="btn btn-primary">New Application</button>}
+        {canCreate && (
+          <button className="btn btn-primary" onClick={() => navigate("/applications")}>
+            New Application
+          </button>
+        )}
       </header>
 
       {error && <div className="error-banner">{error}</div>}
@@ -118,29 +125,12 @@ export default function Applications() {
               <h3>Create Application</h3>
               <input
                 className="input"
-                placeholder="User ID"
-                type="number"
-                value={createForm.user_id}
-                onChange={(e) => setCreateForm({ ...createForm, user_id: e.target.value })}
-                required
-              />
-              <input
-                className="input"
                 placeholder="Job ID"
                 type="number"
                 value={createForm.job_id}
                 onChange={(e) => setCreateForm({ ...createForm, job_id: e.target.value })}
                 required
               />
-              <select
-                className="input"
-                value={createForm.status}
-                onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
-              >
-                <option value="pending">pending</option>
-                <option value="accepted">accepted</option>
-                <option value="rejected">rejected</option>
-              </select>
               <button className="btn btn-primary">Create</button>
             </form>
           )}
@@ -210,6 +200,14 @@ export default function Applications() {
                 <p className="name">User #{app.user_id}</p>
                 <p className="role">Job #{app.job_id}</p>
                 <p className="meta">Applied {app.created_at?.slice(0, 10)}</p>
+                {role === "user" && (
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => navigate(`/jobs`)}
+                  >
+                    View Jobs
+                  </button>
+                )}
               </div>
             ))}
             {grouped[status].length === 0 && (
