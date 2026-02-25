@@ -65,3 +65,7 @@
 .feature-card p {
   @apply mt-2 text-sm text-purple-200;
 }
+
+.page-footer {
+  @apply border-t border-cyan-300/30 pt-6 text-center text-xs text-purple-300;
+}

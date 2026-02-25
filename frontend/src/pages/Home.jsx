@@ -13,7 +13,7 @@ export default function Home() {
             employers. 
           </p>
           <div className="actions">
-            <Link className="btn btn-primary" to="/login">Login To Browse Jobs</Link>
+            <Link className="btn btn-primary" to="/login">Log In to Browse Jobs</Link>
             <Link className="btn btn-ghost" to="/register">Create An Account</Link>
           </div>
         </div>
@@ -51,6 +51,10 @@ export default function Home() {
           <p>Organize companies and contact points for recruiting candidates.</p>
         </article>
       </section>
+
+      <footer className="page-footer">
+        <p>Copyright © 2026 Jazmyn Nathaniel. All rights reserved.</p>
+      </footer>
     </main>
   );
 }
