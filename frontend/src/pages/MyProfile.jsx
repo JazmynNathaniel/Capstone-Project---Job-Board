@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyProfile, createMyProfile, updateMyProfile, deleteMyProfile } from "../api";
+import { getMyProfile, createMyProfile, updateMyProfile, deleteMyProfile, clearAuthToken } from "../api";
 import "./MyProfile.css";
 
 export default function MyProfile() {
@@ -18,6 +18,17 @@ export default function MyProfile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const handleUnauthorized = (err) => {
+    if (err && String(err.message || "").includes("401")) {
+      clearAuthToken();
+      setMessage("");
+      setError("Please log in to manage your profile.");
+      window.location.assign("/login");
+      return true;
+    }
+    return false;
+  };
+
   const load = () => {
     setError("");
     getMyProfile()
@@ -35,7 +46,11 @@ export default function MyProfile() {
           skills: data.skills || ""
         });
       })
-      .catch((err) => setError(err.message || "Failed to load profile"));
+      .catch((err) => {
+        if (!handleUnauthorized(err)) {
+          setError(err.message || "Failed to load profile");
+        }
+      });
   };
 
   useEffect(() => {
@@ -51,7 +66,9 @@ export default function MyProfile() {
       setProfile(data);
       setMessage("Profile created.");
     } catch (err) {
-      setError(err.message || "Failed to create profile");
+      if (!handleUnauthorized(err)) {
+        setError(err.message || "Failed to create profile");
+      }
     }
   };
 
@@ -64,7 +81,9 @@ export default function MyProfile() {
       setProfile(data);
       setMessage("Profile updated.");
     } catch (err) {
-      setError(err.message || "Failed to update profile");
+      if (!handleUnauthorized(err)) {
+        setError(err.message || "Failed to update profile");
+      }
     }
   };
 
@@ -76,7 +95,9 @@ export default function MyProfile() {
       setProfile(null);
       setMessage("Profile deleted.");
     } catch (err) {
-      setError(err.message || "Failed to delete profile");
+      if (!handleUnauthorized(err)) {
+        setError(err.message || "Failed to delete profile");
+      }
     }
   };
 
