@@ -9,7 +9,7 @@ export default function Home() {
           <p className="eyebrow">Somedeed Job Board</p>
           <h1 className="title">Find your next role, or Hire your next team!</h1>
           <p className="subtitle">
-            A small scale platform for jobs, profiles, applications, and
+            A small scale platform for jobseekers, profiles, applications, and
             employers. 
           </p>
           <div className="actions">
