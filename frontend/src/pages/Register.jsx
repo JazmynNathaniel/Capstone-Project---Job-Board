@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api";
 import "./Auth.css";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -23,7 +25,7 @@ export default function Register() {
         delete payload.phone;
       }
       await registerUser(payload);
-      window.location.assign("/login");
+      navigate("/login");
     } catch (err) {
       setMessage(err.message || "Registration failed");
     }
