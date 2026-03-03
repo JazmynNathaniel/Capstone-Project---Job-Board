@@ -39,13 +39,26 @@ async function request(path, options = {}) {
   });
 
   if (!res.ok) {
-    let detail = "";
+    let detailText = "";
+    let detailJson = null;
     try {
-      detail = await res.text();
+      detailJson = await res.json();
     } catch {
-      detail = "";
+      try {
+        detailText = await res.text();
+      } catch {
+        detailText = "";
+      }
     }
-    throw new Error(`Request failed (${res.status}) ${detail}`);
+    const message =
+      detailJson?.error ||
+      detailJson?.message ||
+      detailText ||
+      `Request failed (${res.status})`;
+    const error = new Error(message);
+    error.status = res.status;
+    error.detail = detailJson || detailText;
+    throw error;
   }
 
   return res.json();

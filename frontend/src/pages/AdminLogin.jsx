@@ -7,6 +7,16 @@ export default function AdminLogin() {
   const [message, setMessage] = useState("");
   const [role, setRole] = useState(getAuthRole());
   const [authed, setAuthed] = useState(!!getAuthToken());
+  const formatAuthError = (err) => {
+    const text = String(err?.message || "");
+    if (text.includes("Request failed (401)") && text.includes("Invalid credentials")) {
+      return "Invalid admin email or password.";
+    }
+    if (text.includes("Request failed (401)")) {
+      return "Admin access denied. Please try again.";
+    }
+    return text || "Login failed";
+  };
 
   useEffect(() => {
     if (authed && role === "admin") {
@@ -30,7 +40,7 @@ export default function AdminLogin() {
       setRole(data.role);
       window.location.assign("/admin");
     } catch (err) {
-      setMessage(err.message || "Login failed");
+      setMessage(formatAuthError(err));
     }
   };
 

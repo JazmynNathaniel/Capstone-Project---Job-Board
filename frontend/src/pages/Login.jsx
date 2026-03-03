@@ -8,6 +8,16 @@ export default function Login() {
     password: ""
   });
   const [message, setMessage] = useState("");
+  const formatAuthError = (err) => {
+    const text = String(err?.message || "");
+    if (text.includes("Request failed (401)") && text.includes("Invalid credentials")) {
+      return "Invalid email or password.";
+    }
+    if (text.includes("Request failed (401)")) {
+      return "Your session is not authorized. Please try again.";
+    }
+    return text || "Login failed";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +33,7 @@ export default function Login() {
       setMessage(`Logged in. User ${data.user_id} (${data.role}).`);
       window.location.assign("/");
     } catch (err) {
-      setMessage(err.message || "Login failed");
+      setMessage(formatAuthError(err));
     }
   };
 
