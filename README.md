@@ -3,7 +3,9 @@ Somedeed
 Overview
 
 Somedeed is a full-stack, role-based job board platform simulation, connecting candidates, employers, and
-administrators. Built with Flask, React (Vite), JWT authentication, and deployed on Render with
+administrators. 
+
+Built with Flask, React (Vite), JWT authentication, and deployed on Render with
 automatic CI/CD from GitHub.
 
 Architecture Overview
