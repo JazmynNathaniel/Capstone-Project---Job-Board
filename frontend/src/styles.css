@@ -21,3 +21,156 @@ button {
 nav {
   @apply flex gap-4 justify-center py-4 bg-gray-800;
 }
+
+:root {
+  --a11y-font-scale: 1;
+  --a11y-filter: none;
+}
+
+html {
+  font-size: calc(16px * var(--a11y-font-scale));
+}
+
+.app-root {
+  filter: var(--a11y-filter);
+}
+
+.a11y-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  border-radius: 999px;
+  border: 1px solid #67e8f9;
+  background: #0f172a;
+  color: #e0f2fe;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+.a11y-high-contrast body {
+  background: #000;
+  color: #fff;
+}
+
+.a11y-high-contrast .min-h-screen {
+  background: #000;
+  color: #fff;
+}
+
+.a11y-high-contrast .min-h-screen * {
+  border-color: #fff;
+}
+
+.a11y-high-contrast .nav-link {
+  border-color: #fff;
+  color: #fff;
+}
+
+.a11y-high-contrast header {
+  background-color: #000;
+  color: #fff;
+  text-shadow: none;
+}
+
+.a11y-high-contrast nav {
+  background-color: #000;
+}
+
+.a11y-high-contrast button,
+.a11y-high-contrast input,
+.a11y-high-contrast select {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.a11y-high-contrast .skip-link {
+  background: #000;
+  color: #fff;
+  border-color: #fff;
+}
+
+.theme-light body {
+  background: #f7f3ff;
+  color: #12091d;
+}
+
+.theme-light .app-root {
+  background: #f7f3ff;
+  color: #12091d;
+}
+
+.theme-light header {
+  background-color: #f0e6ff;
+  color: #1d0d30;
+  text-shadow: none;
+}
+
+.theme-light nav {
+  background-color: #e7dbff;
+}
+
+.theme-light .nav-link {
+  color: #2e1065;
+}
+
+.theme-light .nav-link.active {
+  border-color: #5b21b6;
+  color: #4c1d95;
+}
+
+.theme-light .a11y-menu {
+  background: rgba(245, 239, 255, 0.95);
+  color: #1d0d30;
+  border-color: rgba(109, 40, 217, 0.35);
+}
+
+.theme-light .a11y-menu select {
+  background: #ffffff;
+  color: #1d0d30;
+  border-color: rgba(109, 40, 217, 0.4);
+}
+
+.theme-light .skip-link {
+  background: #e0d4ff;
+  color: #1d0d30;
+  border-color: #5b21b6;
+}
+
+.a11y-dyslexia-font body {
+  font-family: "Verdana", "Arial", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.a11y-underline-links a,
+.a11y-underline-links button.nav-link {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.a11y-reduce-motion *,
+.a11y-reduce-motion *::before,
+.a11y-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+.a11y-focus-ring :focus-visible {
+  outline: 3px solid #7dd3fc;
+  outline-offset: 3px;
+}
