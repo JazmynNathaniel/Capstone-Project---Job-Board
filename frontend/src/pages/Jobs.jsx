@@ -8,7 +8,8 @@ import {
   getAuthRole,
   listSavedJobs,
   saveJob,
-  unsaveJob
+  unsaveJob,
+  formatApiError
 } from "../api";
 import "./Jobs.css";
 
@@ -83,7 +84,7 @@ export default function Jobs() {
   const refresh = (nextFilters = filters) => {
     listJobs(buildParams(nextFilters))
       .then((data) => setJobs(data || []))
-      .catch((err) => setError(err.message || "Failed to load jobs"));
+      .catch((err) => setError(formatApiError(err, "Failed to load jobs")));
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export default function Jobs() {
       });
       refresh(filters);
     } catch (err) {
-      setError(err.message || "Failed to create job");
+      setError(formatApiError(err, "Failed to create job"));
     }
   };
 
@@ -159,7 +160,7 @@ export default function Jobs() {
       });
       refresh(filters);
     } catch (err) {
-      setError(err.message || "Failed to update job");
+      setError(formatApiError(err, "Failed to update job"));
     }
   };
 
@@ -173,7 +174,7 @@ export default function Jobs() {
       setDeleteId("");
       refresh(filters);
     } catch (err) {
-      setError(err.message || "Failed to delete job");
+      setError(formatApiError(err, "Failed to delete job"));
     }
   };
 
@@ -195,7 +196,7 @@ export default function Jobs() {
         setMessage("Saved job.");
       }
     } catch (err) {
-      setError(err.message || "Failed to save job");
+      setError(formatApiError(err, "Failed to save job"));
     }
   };
 

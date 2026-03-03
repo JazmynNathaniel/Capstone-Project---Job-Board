@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyEmployer, createMyEmployer, updateMyEmployer } from "../api";
+import { getMyEmployer, createMyEmployer, updateMyEmployer, formatApiError } from "../api";
 import "./MyEmployer.css";
 
 export default function MyEmployer() {
@@ -27,7 +27,7 @@ export default function MyEmployer() {
           email: data.email || ""
         });
       })
-      .catch((err) => setError(err.message || "Failed to load employer profile"));
+      .catch((err) => setError(formatApiError(err, "Failed to load employer profile")));
   };
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function MyEmployer() {
       setEmployer(data);
       setMessage("Employer profile created.");
     } catch (err) {
-      setError(err.message || "Failed to create employer profile");
+      setError(formatApiError(err, "Failed to create employer profile"));
     }
   };
 
@@ -56,7 +56,7 @@ export default function MyEmployer() {
       setEmployer(data);
       setMessage("Employer profile updated.");
     } catch (err) {
-      setError(err.message || "Failed to update employer profile");
+      setError(formatApiError(err, "Failed to update employer profile"));
     }
   };
 

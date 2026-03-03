@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listProfiles, createProfile, updateProfile, deleteProfile } from "../api";
+import { listProfiles, createProfile, updateProfile, deleteProfile, formatApiError } from "../api";
 import "./Profiles.css";
 
 export default function Profiles() {
@@ -22,7 +22,7 @@ export default function Profiles() {
   const refresh = () => {
     listProfiles()
       .then((data) => setProfiles(data || []))
-      .catch((err) => setError(err.message || "Failed to load profiles"));
+      .catch((err) => setError(formatApiError(err, "Failed to load profiles")));
   };
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function Profiles() {
       setCreateForm({ user_id: "", full_name: "", bio: "" });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to create profile");
+      setError(formatApiError(err, "Failed to create profile"));
     }
   };
 
@@ -60,7 +60,7 @@ export default function Profiles() {
       setUpdateForm({ id: "", user_id: "", full_name: "", bio: "" });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to update profile");
+      setError(formatApiError(err, "Failed to update profile"));
     }
   };
 
@@ -74,7 +74,7 @@ export default function Profiles() {
       setDeleteId("");
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to delete profile");
+      setError(formatApiError(err, "Failed to delete profile"));
     }
   };
 

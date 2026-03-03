@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listSavedJobs, listJobs, unsaveJob } from "../api";
+import { listSavedJobs, listJobs, unsaveJob, formatApiError } from "../api";
 import "./MySavedJobs.css";
 
 export default function MySavedJobs() {
@@ -16,7 +16,7 @@ export default function MySavedJobs() {
       const filtered = (allJobs || []).filter((j) => ids.has(j.id));
       setJobs(filtered);
     } catch (err) {
-      setError(err.message || "Failed to load saved jobs");
+      setError(formatApiError(err, "Failed to load saved jobs"));
     }
   };
 
@@ -32,7 +32,7 @@ export default function MySavedJobs() {
       setMessage("Removed from saved jobs.");
       setJobs((prev) => prev.filter((j) => j.id !== jobId));
     } catch (err) {
-      setError(err.message || "Failed to remove job");
+      setError(formatApiError(err, "Failed to remove job"));
     }
   };
 

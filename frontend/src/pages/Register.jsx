@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api";
+import { registerUser, formatApiError } from "../api";
 import "./Auth.css";
 
 export default function Register() {
@@ -27,7 +27,7 @@ export default function Register() {
       await registerUser(payload);
       navigate("/login");
     } catch (err) {
-      setMessage(err.message || "Registration failed");
+      setMessage(formatApiError(err, "Registration failed"));
     }
   };
 

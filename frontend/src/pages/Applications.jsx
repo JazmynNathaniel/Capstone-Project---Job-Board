@@ -5,7 +5,8 @@ import {
   createApplication,
   updateApplication,
   deleteApplication,
-  getAuthRole
+  getAuthRole,
+  formatApiError
 } from "../api";
 import "./Applications.css";
 
@@ -51,7 +52,7 @@ export default function Applications() {
   const refresh = () => {
     listApplications()
       .then((data) => setApplications(data || []))
-      .catch((err) => setError(err.message || "Failed to load applications"));
+      .catch((err) => setError(formatApiError(err, "Failed to load applications")));
   };
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export default function Applications() {
       setCreateForm({ job_id: "" });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to create application");
+      setError(formatApiError(err, "Failed to create application"));
     }
   };
 
@@ -100,7 +101,7 @@ export default function Applications() {
       setUpdateForm({ id: "", user_id: "", job_id: "", status: "" });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to update application");
+      setError(formatApiError(err, "Failed to update application"));
     }
   };
 
@@ -114,7 +115,7 @@ export default function Applications() {
       setDeleteId("");
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to delete application");
+      setError(formatApiError(err, "Failed to delete application"));
     }
   };
 

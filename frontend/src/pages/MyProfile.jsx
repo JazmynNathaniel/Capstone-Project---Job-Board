@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyProfile, createMyProfile, updateMyProfile, deleteMyProfile, clearAuthToken } from "../api";
+import { getMyProfile, createMyProfile, updateMyProfile, deleteMyProfile, clearAuthToken, formatApiError } from "../api";
 import "./MyProfile.css";
 
 export default function MyProfile() {
@@ -19,7 +19,7 @@ export default function MyProfile() {
   const [error, setError] = useState("");
 
   const handleUnauthorized = (err) => {
-    if (err && String(err.message || "").includes("401")) {
+    if (err && err.status === 401) {
       clearAuthToken();
       setMessage("");
       setError("Please log in to manage your profile.");
@@ -48,7 +48,7 @@ export default function MyProfile() {
       })
       .catch((err) => {
         if (!handleUnauthorized(err)) {
-          setError(err.message || "Failed to load profile");
+          setError(formatApiError(err, "Failed to load profile"));
         }
       });
   };
@@ -67,7 +67,7 @@ export default function MyProfile() {
       setMessage("Profile created.");
     } catch (err) {
       if (!handleUnauthorized(err)) {
-        setError(err.message || "Failed to create profile");
+        setError(formatApiError(err, "Failed to create profile"));
       }
     }
   };
@@ -82,7 +82,7 @@ export default function MyProfile() {
       setMessage("Profile updated.");
     } catch (err) {
       if (!handleUnauthorized(err)) {
-        setError(err.message || "Failed to update profile");
+        setError(formatApiError(err, "Failed to update profile"));
       }
     }
   };
@@ -96,7 +96,7 @@ export default function MyProfile() {
       setMessage("Profile deleted.");
     } catch (err) {
       if (!handleUnauthorized(err)) {
-        setError(err.message || "Failed to delete profile");
+        setError(formatApiError(err, "Failed to delete profile"));
       }
     }
   };

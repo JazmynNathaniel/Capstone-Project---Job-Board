@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listUsers, deleteUser } from "../api";
+import { listUsers, deleteUser, formatApiError } from "../api";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   const refresh = () => {
     listUsers()
       .then((data) => setUsers(data || []))
-      .catch((err) => setError(err.message || "Failed to load users"));
+      .catch((err) => setError(formatApiError(err, "Failed to load users")));
   };
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
       setMessage("User deleted.");
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to delete user");
+      setError(formatApiError(err, "Failed to delete user"));
     }
   };
 

@@ -27,6 +27,19 @@ export function getAuthRole() {
   return localStorage.getItem(ROLE_KEY);
 }
 
+export function formatApiError(err, fallback = "Something went wrong.") {
+  const status = err?.status;
+  const message = String(err?.message || "").trim();
+
+  if (status === 401) return "Please sign in to continue.";
+  if (status === 403) return "You do not have access to perform this action.";
+  if (status === 404) return "The requested item could not be found.";
+  if (status === 409) return message || "That record already exists.";
+  if (status >= 500) return "Server error. Please try again.";
+  if (message) return message;
+  return fallback;
+}
+
 async function request(path, options = {}) {
   const token = getAuthToken();
   const res = await fetch(`${BASE_URL}${path}`, {

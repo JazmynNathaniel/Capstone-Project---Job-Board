@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listEmployers, createEmployer, updateEmployer, deleteEmployer } from "../api";
+import { listEmployers, createEmployer, updateEmployer, deleteEmployer, formatApiError } from "../api";
 import "./Employers.css";
 
 export default function Employers() {
@@ -32,7 +32,7 @@ export default function Employers() {
   const refresh = () => {
     listEmployers()
       .then((data) => setEmployers(data || []))
-      .catch((err) => setError(err.message || "Failed to load employers"));
+      .catch((err) => setError(formatApiError(err, "Failed to load employers")));
   };
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function Employers() {
       });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to create employer");
+      setError(formatApiError(err, "Failed to create employer"));
     }
   };
 
@@ -94,7 +94,7 @@ export default function Employers() {
       });
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to update employer");
+      setError(formatApiError(err, "Failed to update employer"));
     }
   };
 
@@ -108,7 +108,7 @@ export default function Employers() {
       setDeleteId("");
       refresh();
     } catch (err) {
-      setError(err.message || "Failed to delete employer");
+      setError(formatApiError(err, "Failed to delete employer"));
     }
   };
 
