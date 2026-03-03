@@ -47,16 +47,16 @@ def upgrade():
         ).fetchall()
         return len(rows) > 0
 
-    def _constraint_exists(table, name):
+    def _index_exists(table, name):
         if bind.dialect.name == "sqlite":
             rows = bind.execute(text(f"PRAGMA index_list({table})")).fetchall()
             return any(r[1] == name for r in rows)
         rows = bind.execute(
             text(
-                "SELECT constraint_name FROM information_schema.table_constraints "
-                "WHERE table_name = :t AND constraint_name = :c"
+                "SELECT indexname FROM pg_indexes "
+                "WHERE tablename = :t AND indexname = :n"
             ),
-            {"t": table, "c": name}
+            {"t": table, "n": name}
         ).fetchall()
         return len(rows) > 0
 
@@ -84,12 +84,13 @@ def upgrade():
         if not _column_exists("applications", "cover_letter"):
             batch.add_column(sa.Column("cover_letter", sa.Text(), nullable=True))
 
-    if not _constraint_exists("applications", "uq_applications_user_job"):
+    if not _index_exists("applications", "uq_applications_user_job"):
         try:
-            op.create_unique_constraint(
+            op.create_index(
                 "uq_applications_user_job",
                 "applications",
-                ["user_id", "job_id"]
+                ["user_id", "job_id"],
+                unique=True
             )
         except OperationalError:
             pass
@@ -107,7 +108,7 @@ def upgrade():
 
 def downgrade():
     try:
-        op.drop_constraint("uq_applications_user_job", "applications", type_="unique")
+        op.drop_index("uq_applications_user_job", table_name="applications")
     except OperationalError:
         pass
 
