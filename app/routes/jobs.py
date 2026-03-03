@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from sqlalchemy import or_
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
-from ..models import Job, Employer, User
+from ..models import Job, Employer, User, ApplicationForm
 
 jobs_bp = Blueprint("jobs", __name__)
 MAX_JOBS = 100
@@ -147,6 +147,8 @@ def create_job():
         employer_id=employer_id,
     )
     db.session.add(job)
+    db.session.flush()
+    db.session.add(ApplicationForm(job_id=job.id))
     db.session.commit()
     return jsonify(_job_to_dict(job)), 201
 

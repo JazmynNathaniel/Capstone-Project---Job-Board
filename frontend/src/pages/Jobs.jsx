@@ -22,7 +22,7 @@ export default function Jobs() {
   const role = getAuthRole();
   const canManageJobs = role === "employer" || role === "admin";
   const canSave = role === "user";
-  const canApply = role === "employer" || role === "admin";
+  const canApply = role === "user";
   const headerCopy =
     role === "admin"
       ? {
@@ -39,7 +39,7 @@ export default function Jobs() {
         : {
             title: "Explore open roles",
             subtitle: "Search, save, and apply to roles that fit you.",
-            note: "Candidate access: save jobs and view role details."
+            note: "Candidate access: save jobs and submit applications."
           };
   const [filters, setFilters] = useState({
     query: "",
@@ -201,7 +201,7 @@ export default function Jobs() {
   };
 
   const handleApply = (jobId) => {
-    navigate(`/applications?job_id=${jobId}`);
+    navigate(`/applications/form/${jobId}`);
   };
 
   return (
@@ -396,7 +396,7 @@ export default function Jobs() {
                 )}
                 {canApply && (
                   <button className="btn btn-primary" onClick={() => handleApply(job.id)}>
-                    Create application
+                    Apply now
                   </button>
                 )}
               </div>

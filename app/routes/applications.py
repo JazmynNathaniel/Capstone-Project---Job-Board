@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
-from ..models import Application, Job, User, Employer
+from ..models import Application, ApplicationForm, Job, User, Employer
+from sqlalchemy.exc import IntegrityError
 
 applications_bp = Blueprint("applications", __name__)
 
@@ -11,6 +12,11 @@ def _application_to_dict(application):
         "id": application.id,
         "user_id": application.user_id,
         "job_id": application.job_id,
+        "full_name": application.full_name,
+        "email": application.email,
+        "phone": application.phone,
+        "resume_url": application.resume_url,
+        "cover_letter": application.cover_letter,
         "status": application.status,
         "created_at": application.created_at.isoformat() if application.created_at else None,
     }
@@ -44,7 +50,7 @@ def create_application():
     if not data:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    required = ["user_id", "job_id"]
+    required = ["job_id", "full_name", "email", "phone"]
     if any(k not in data or data.get(k) in (None, "") for k in required):
         return jsonify({"error": "Missing fields"}), 400
 
@@ -55,17 +61,30 @@ def create_application():
         return jsonify({"error": "Forbidden"}), 403
 
     job_id = int(data["job_id"])
-    if not Job.query.get(job_id):
+    job = Job.query.get(job_id)
+    if not job:
         return jsonify({"error": "Job not found"}), 404
+    form = ApplicationForm.query.filter_by(job_id=job_id).first()
+    if not form:
+        return jsonify({"error": "Application form not found for this job"}), 404
 
     application = Application(
         user_id=user.id,
         job_id=job_id,
+        full_name=data["full_name"],
+        email=data["email"],
+        phone=data["phone"],
+        resume_url=data.get("resume_url"),
+        cover_letter=data.get("cover_letter"),
         status="pending",
     )
 
-    db.session.add(application)
-    db.session.commit()
+    try:
+        db.session.add(application)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "You already applied to this job"}), 409
     return jsonify(_application_to_dict(application)), 201
 
 
@@ -117,7 +136,7 @@ def update_application(application_id):
 
     if "status" in data:
         status = data["status"]
-        if status not in {"pending", "accepted", "rejected"}:
+        if status not in {"pending", "reviewed", "accepted", "rejected"}:
             return jsonify({"error": "Invalid status"}), 400
         application.status = status
 
@@ -139,3 +158,24 @@ def delete_application(application_id):
     db.session.delete(application)
     db.session.commit()
     return jsonify({"message": "Deleted"}), 200
+
+
+@applications_bp.route("/form/<int:job_id>", methods=["GET"])
+@jwt_required()
+def get_application_form(job_id):
+    user = User.query.get(int(get_jwt_identity()))
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    job = Job.query.get(job_id)
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    form = ApplicationForm.query.filter_by(job_id=job_id).first()
+    if not form:
+        return jsonify({"error": "Application form not found"}), 404
+    return jsonify({
+        "job_id": job.id,
+        "job_title": job.title,
+        "job_location": job.location,
+        "employer_id": job.employer_id,
+        "fields": ["full_name", "email", "phone", "resume_url", "cover_letter"],
+    }), 200

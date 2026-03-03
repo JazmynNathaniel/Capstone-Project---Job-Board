@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   listApplications,
-  createApplication,
   updateApplication,
   deleteApplication,
   getAuthRole,
@@ -14,10 +13,8 @@ export default function Applications() {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const role = getAuthRole();
-  const canCreate = role === "employer" || role === "admin";
   const canUpdate = role === "employer" || role === "admin";
   const canDelete = role === "admin";
   const headerCopy =
@@ -25,22 +22,19 @@ export default function Applications() {
       ? {
           title: "Oversee application flow",
           subtitle: "Review submissions across employers and roles.",
-          note: "Admin access: create, update, or delete any application."
+          note: "Admin access: review, update, or delete any application."
         }
       : role === "employer"
         ? {
             title: "Track candidate flow",
             subtitle: "Monitor pipeline status and progress.",
-            note: "Employer access: create and update application statuses."
+            note: "Employer access: review and update application statuses."
           }
         : {
             title: "Track your applications",
             subtitle: "Review statuses and next steps.",
-            note: "Candidate access: view your application history."
+            note: "Candidate access: submit and track your applications."
           };
-  const [createForm, setCreateForm] = useState({
-    job_id: ""
-  });
   const [updateForm, setUpdateForm] = useState({
     id: "",
     user_id: "",
@@ -57,35 +51,16 @@ export default function Applications() {
 
   useEffect(() => {
     refresh();
-    const jobId = searchParams.get("job_id");
-    if (jobId) {
-      setCreateForm((prev) => ({ ...prev, job_id: jobId }));
-    }
   }, []);
 
   const grouped = useMemo(() => {
     return {
       pending: applications.filter((a) => a.status === "pending"),
+      reviewed: applications.filter((a) => a.status === "reviewed"),
       accepted: applications.filter((a) => a.status === "accepted"),
       rejected: applications.filter((a) => a.status === "rejected")
     };
   }, [applications]);
-
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-    try {
-      await createApplication({
-        job_id: Number(createForm.job_id)
-      });
-      setMessage("Application created.");
-      setCreateForm({ job_id: "" });
-      refresh();
-    } catch (err) {
-      setError(formatApiError(err, "Failed to create application"));
-    }
-  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -99,6 +74,18 @@ export default function Applications() {
       await updateApplication(updateForm.id, payload);
       setMessage("Application updated.");
       setUpdateForm({ id: "", user_id: "", job_id: "", status: "" });
+      refresh();
+    } catch (err) {
+      setError(formatApiError(err, "Failed to update application"));
+    }
+  };
+
+  const handleQuickStatus = async (applicationId, status) => {
+    setError("");
+    setMessage("");
+    try {
+      await updateApplication(applicationId, { status });
+      setMessage(`Application marked ${status}.`);
       refresh();
     } catch (err) {
       setError(formatApiError(err, "Failed to update application"));
@@ -128,9 +115,9 @@ export default function Applications() {
           <p className="subtitle">{headerCopy.subtitle}</p>
           <p className="helper-text">{headerCopy.note}</p>
         </div>
-        {canCreate && (
-          <button className="btn btn-primary" onClick={() => navigate("/applications")}>
-            New Application
+        {role === "user" && (
+          <button className="btn btn-primary" onClick={() => navigate("/jobs")}>
+            Browse Jobs
           </button>
         )}
       </header>
@@ -138,23 +125,8 @@ export default function Applications() {
       {error && <div className="error-banner">{error}</div>}
       {message && <div className="success-banner">{message}</div>}
 
-      {(canCreate || canUpdate || canDelete) && (
+      {(canUpdate || canDelete) && (
         <section className="form-grid">
-          {canCreate && (
-            <form className="form-card" onSubmit={handleCreate}>
-              <h3>Create Application</h3>
-              <input
-                className="input"
-                placeholder="Job ID"
-                type="number"
-                value={createForm.job_id}
-                onChange={(e) => setCreateForm({ ...createForm, job_id: e.target.value })}
-                required
-              />
-              <button className="btn btn-primary">Create</button>
-            </form>
-          )}
-
           {canUpdate && (
             <form className="form-card" onSubmit={handleUpdate}>
               <h3>Update Application</h3>
@@ -187,6 +159,7 @@ export default function Applications() {
               >
                 <option value="">Select status</option>
                 <option value="pending">pending</option>
+                <option value="reviewed">reviewed</option>
                 <option value="accepted">accepted</option>
                 <option value="rejected">rejected</option>
               </select>
@@ -212,23 +185,51 @@ export default function Applications() {
       )}
 
       <section className="pipeline-grid">
-        {["pending", "accepted", "rejected"].map((status) => (
+        {["pending", "reviewed", "accepted", "rejected"].map((status) => (
           <div key={status} className={`pipeline-column status-${status}`}>
             <h3>{status}</h3>
             {grouped[status].map((app) => (
               <div key={app.id} className="pipeline-card">
                 {role === "user" ? (
                   <>
-                    <p className="name">Job #{app.job_id}</p>
+                    <p className="name">{app.full_name || `Job #${app.job_id}`}</p>
                     <p className="role">Application #{app.id}</p>
                   </>
                 ) : (
                   <>
-                    <p className="name">Candidate #{app.user_id}</p>
+                    <p className="name">{app.full_name || `Candidate #${app.user_id}`}</p>
                     <p className="role">Job #{app.job_id}</p>
                   </>
                 )}
                 <p className="meta">Applied {app.created_at?.slice(0, 10)}</p>
+                {role !== "user" && app.email && (
+                  <p className="meta">{app.email}</p>
+                )}
+                {role !== "user" && app.phone && (
+                  <p className="meta">{app.phone}</p>
+                )}
+                {role !== "user" && app.resume_url && (
+                  <p className="meta">Resume: {app.resume_url}</p>
+                )}
+                {role !== "user" && app.cover_letter && (
+                  <p className="meta">Cover letter: {app.cover_letter}</p>
+                )}
+                {role !== "user" && (
+                  <div className="status-actions">
+                    {["pending", "reviewed", "accepted", "rejected"].map((statusOption) => (
+                      <button
+                        key={statusOption}
+                        type="button"
+                        className={`status-pill status-${statusOption} ${
+                          app.status === statusOption ? "is-active" : ""
+                        }`}
+                        onClick={() => handleQuickStatus(app.id, statusOption)}
+                      >
+                        {statusOption}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {role === "user" && (
                   <button
                     className="btn btn-ghost"

@@ -253,6 +253,17 @@ export function deleteMyProfile() {
   });
 }
 
+export function getApplicationForm(jobId) {
+  return request(`/applications/form/${jobId}`);
+}
+
+export function submitApplication(payload) {
+  return request("/applications/", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
 export function registerUser(payload) {
   return request("/auth/register", {
     method: "POST",

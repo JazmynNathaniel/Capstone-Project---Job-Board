@@ -7,6 +7,7 @@ import Jobs from "./pages/Jobs";
 import Employers from "./pages/Employers";
 import Profiles from "./pages/Profiles";
 import Applications from "./pages/Applications";
+import ApplicationForm from "./pages/ApplicationForm";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
@@ -345,7 +346,10 @@ function App() {
             {authed && role === "admin" && (
               <Route path="/profiles" element={<Profiles />} />
             )}
-            {authed && <Route path="/applications" element={<Applications />} />}
+          {authed && <Route path="/applications" element={<Applications />} />}
+          {authed && role === "user" && (
+            <Route path="/applications/form/:jobId" element={<ApplicationForm />} />
+          )}
             {authed && role === "user" && (
               <Route path="/my-profile" element={<MyProfile />} />
             )}

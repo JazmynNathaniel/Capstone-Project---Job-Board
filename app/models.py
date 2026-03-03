@@ -61,12 +61,32 @@ class Job(db.Model):
     
     def __repr__(self):
         return f'<Job {self.title}>'
+
+
+class ApplicationForm(db.Model):
+    __tablename__ = 'application_forms'
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id', ondelete='CASCADE'), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    job = db.relationship(
+        "Job",
+        backref=db.backref("application_form", uselist=False, cascade="all, delete-orphan"),
+        passive_deletes=True
+    )
+
+    def __repr__(self):
+        return f'<ApplicationForm Job {self.job_id}>'
     
 class Application(db.Model):
     __tablename__ = 'applications'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     job_id = db.Column(db.Integer, db.ForeignKey('jobs.id', ondelete='CASCADE'), nullable=False)
+    full_name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(40), nullable=False)
+    resume_url = db.Column(db.String(255), nullable=True)
+    cover_letter = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship(
@@ -84,6 +104,10 @@ class Application(db.Model):
         return f'<Application {self.id} - User {self.user_id} - Job {self.job_id}>'
     #this is a string representation of the Application object, which will be useful for debugging and logging purposes. 
     # It includes the application ID, the user ID, and the job ID associated with the application.
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "job_id", name="uq_applications_user_job"),
+    )
 
 class Profile(db.Model):
     __tablename__ = 'profiles'
