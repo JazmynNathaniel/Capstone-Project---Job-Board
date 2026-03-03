@@ -247,9 +247,25 @@ html {
 }
 
 @media (max-width: 640px) {
+  .a11y-fab {
+    display: none;
+  }
+
+  .a11y-menu {
+    display: none;
+  }
+
+  .mobile-a11y-link {
+    display: inline-flex;
+  }
+
   .a11y-menu {
     right: 0.75rem !important;
     left: 0.75rem !important;
     width: auto !important;
   }
+}
+
+.mobile-a11y-link {
+  display: none;
 }

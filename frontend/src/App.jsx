@@ -8,6 +8,7 @@ import Employers from "./pages/Employers";
 import Profiles from "./pages/Profiles";
 import Applications from "./pages/Applications";
 import ApplicationForm from "./pages/ApplicationForm";
+import Accessibility from "./pages/Accessibility";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
@@ -244,6 +245,9 @@ function App() {
             )}
             {!authed && <NavLink className="nav-link" to="/login">Login</NavLink>}
             {!authed && <NavLink className="nav-link" to="/register">Register</NavLink>}
+            <NavLink className="nav-link mobile-a11y-link" to="/accessibility">
+              Accessibility
+            </NavLink>
             {authed && (
               <button className="nav-link" onClick={handleLogout}>Logout</button>
             )}
@@ -276,6 +280,17 @@ function App() {
             {authed && role === "admin" && (
               <Route path="/admin" element={<AdminDashboard />} />
             )}
+            <Route
+              path="/accessibility"
+              element={
+                <Accessibility
+                  prefs={a11yPrefs}
+                  onUpdate={updateA11yPref}
+                  onAdjustFont={adjustFontScale}
+                  onReset={resetA11y}
+                />
+              }
+            />
             {!authed && <Route path="/login" element={<Login />} />}
             {!authed && <Route path="/register" element={<Register />} />}
           </Routes>
