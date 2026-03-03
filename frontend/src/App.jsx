@@ -30,7 +30,8 @@ function App() {
     return { x: 24, y: 120 };
   });
   const [dragging, setDragging] = useState(false);
-  const dragRef = useRef({ offsetX: 0, offsetY: 0 });
+  const dragRef = useRef({ offsetX: 0, offsetY: 0, moved: false, pointerId: null });
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [a11yPrefs, setA11yPrefs] = useState(() => {
     const defaults = {
       fontScale: 1,
@@ -104,6 +105,15 @@ function App() {
   }, [a11yPrefs]);
 
   useEffect(() => {
+    const updateViewport = () => {
+      setViewport({ width: window.innerWidth, height: window.innerHeight });
+    };
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  useEffect(() => {
     try {
       localStorage.setItem("a11yFabPos", JSON.stringify(a11yPos));
     } catch {
@@ -147,7 +157,8 @@ function App() {
 
   useEffect(() => {
     const handleMove = (event) => {
-      if (!dragging) return;
+      if (!dragging || dragRef.current.pointerId !== event.pointerId) return;
+      dragRef.current.moved = true;
       const nextX = Math.min(
         window.innerWidth - 56,
         Math.max(12, event.clientX - dragRef.current.offsetX)
@@ -159,8 +170,11 @@ function App() {
       setA11yPos({ x: nextX, y: nextY });
     };
 
-    const handleUp = () => {
-      if (dragging) setDragging(false);
+    const handleUp = (event) => {
+      if (dragging && dragRef.current.pointerId === event.pointerId) {
+        setDragging(false);
+        dragRef.current.pointerId = null;
+      }
     };
 
     window.addEventListener("pointermove", handleMove);
@@ -207,142 +221,7 @@ function App() {
               </p>
               <h1 className="text-2xl font-semibold text-white">Welcome to Somedeed!</h1>
             </div>
-            <div className="relative">
-              {a11yOpen && (
-                <div
-                  id="accessibility-menu"
-                  role="dialog"
-                  aria-label="Accessibility preferences"
-                  className="a11y-menu absolute right-0 top-12 z-20 w-72 rounded-2xl border border-cyan-200/30 bg-black/90 p-4 text-sm text-purple-100 shadow-2xl shadow-cyan-500/20"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
-                      Display Options
-                    </span>
-                    <button
-                      className="text-xs text-cyan-200 hover:text-cyan-50"
-                      onClick={() => setA11yOpen(false)}
-                    >
-                      Close
-                    </button>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <span>Text size</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="h-7 w-7 rounded-full border border-cyan-200/40 text-cyan-100 transition hover:border-cyan-200"
-                          onClick={() => adjustFontScale(-1)}
-                          aria-label="Decrease text size"
-                          disabled={a11yPrefs.fontScale === 1}
-                        >
-                          -
-                        </button>
-                        <span className="text-xs text-cyan-100">
-                          {Math.round(a11yPrefs.fontScale * 100)}%
-                        </span>
-                        <button
-                          className="h-7 w-7 rounded-full border border-cyan-200/40 text-cyan-100 transition hover:border-cyan-200"
-                          onClick={() => adjustFontScale(1)}
-                          aria-label="Increase text size"
-                          disabled={a11yPrefs.fontScale === 1.5}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Light mode</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.theme === "light"}
-                        onChange={(event) =>
-                          updateA11yPref(
-                            "theme",
-                            event.target.checked ? "light" : "dark"
-                          )
-                        }
-                      />
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>High contrast</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.highContrast}
-                        onChange={(event) =>
-                          updateA11yPref("highContrast", event.target.checked)
-                        }
-                      />
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Color-blind filter</span>
-                      <select
-                        className="rounded-lg border border-cyan-200/30 bg-black/40 px-2 py-1 text-xs text-cyan-100"
-                        value={a11yPrefs.colorFilter}
-                        onChange={(event) =>
-                          updateA11yPref("colorFilter", event.target.value)
-                        }
-                      >
-                        <option value="none">None</option>
-                        <option value="protanopia">Protanopia assist</option>
-                        <option value="deuteranopia">Deuteranopia assist</option>
-                        <option value="tritanopia">Tritanopia assist</option>
-                        <option value="achromatopsia">Low color</option>
-                      </select>
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Dyslexia-friendly font</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.dyslexiaFont}
-                        onChange={(event) =>
-                          updateA11yPref("dyslexiaFont", event.target.checked)
-                        }
-                      />
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Underline links</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.underlineLinks}
-                        onChange={(event) =>
-                          updateA11yPref("underlineLinks", event.target.checked)
-                        }
-                      />
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Reduce motion</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.reduceMotion}
-                        onChange={(event) =>
-                          updateA11yPref("reduceMotion", event.target.checked)
-                        }
-                      />
-                    </label>
-                    <label className="flex items-center justify-between gap-3">
-                      <span>Extra focus outlines</span>
-                      <input
-                        type="checkbox"
-                        checked={a11yPrefs.focusRing}
-                        onChange={(event) =>
-                          updateA11yPref("focusRing", event.target.checked)
-                        }
-                      />
-                    </label>
-                  </div>
-
-                  <button
-                    className="mt-4 w-full rounded-full border border-cyan-200/50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100 transition hover:border-cyan-200 hover:text-cyan-50"
-                    onClick={resetA11y}
-                  >
-                    Reset to default
-                  </button>
-                </div>
-              )}
-            </div>
+            <div className="relative"></div>
           </div>
           <nav className="flex flex-wrap gap-3 text-sm">
             <NavLink className="nav-link" to="/">Home</NavLink>
@@ -410,7 +289,7 @@ function App() {
         </footer>
       </div>
       <button
-        className="fixed z-40 h-12 w-12 rounded-full border border-cyan-200/60 bg-cyan-500/10 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-cyan-100 shadow-lg shadow-cyan-500/30 transition hover:border-cyan-200 hover:bg-cyan-400/20"
+        className="a11y-fab fixed z-50 flex h-12 w-12 items-center justify-center rounded-full border border-cyan-200/60 bg-cyan-500/10 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-cyan-100 shadow-lg shadow-cyan-500/30 transition hover:border-cyan-200 hover:bg-cyan-400/20"
         style={{ left: a11yPos.x, top: a11yPos.y }}
         aria-expanded={a11yOpen}
         aria-controls="accessibility-menu"
@@ -418,16 +297,179 @@ function App() {
         aria-keyshortcuts="Alt+A"
         title="Accessibility menu (Alt + A)"
         onClick={() => {
-          if (!dragging) setA11yOpen((prev) => !prev);
+          if (!dragging && !dragRef.current.moved) {
+            setA11yOpen((prev) => !prev);
+          }
+          dragRef.current.moved = false;
         }}
         onPointerDown={(event) => {
           dragRef.current.offsetX = event.clientX - a11yPos.x;
           dragRef.current.offsetY = event.clientY - a11yPos.y;
+          dragRef.current.moved = false;
+          dragRef.current.pointerId = event.pointerId;
+          event.currentTarget.setPointerCapture(event.pointerId);
           setDragging(true);
         }}
       >
-        A11y
+        <span className="sr-only">Accessibility menu</span>
+        <svg
+          aria-hidden="true"
+          className="h-6 w-6 text-cyan-100"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M8 3a2 2 0 1 0 0 4a2 2 0 0 0 0-4z" />
+          <path d="M4 8h8" />
+          <path d="M8 8v6a4 4 0 1 0 4 4" />
+          <path d="M12 12h4l3 6" />
+          <circle cx="16" cy="18" r="3" />
+        </svg>
       </button>
+      {a11yOpen && (
+        <div
+          id="accessibility-menu"
+          role="dialog"
+          aria-label="Accessibility preferences"
+          className="a11y-menu fixed z-50 w-72 rounded-2xl border border-cyan-200/30 bg-black/90 p-4 text-sm text-purple-100 shadow-2xl shadow-cyan-500/20"
+          style={{
+            left: Math.min(a11yPos.x, Math.max(12, viewport.width - 320)),
+            top:
+              a11yPos.y + 320 > viewport.height
+                ? Math.max(12, a11yPos.y - 320)
+                : Math.min(a11yPos.y + 60, Math.max(12, viewport.height - 320))
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
+              Display Options
+            </span>
+            <button
+              className="text-xs text-cyan-200 hover:text-cyan-50"
+              onClick={() => setA11yOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <span>Text size</span>
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-7 w-7 rounded-full border border-cyan-200/40 text-cyan-100 transition hover:border-cyan-200"
+                  onClick={() => adjustFontScale(-1)}
+                  aria-label="Decrease text size"
+                  disabled={a11yPrefs.fontScale === 1}
+                >
+                  -
+                </button>
+                <span className="text-xs text-cyan-100">
+                  {Math.round(a11yPrefs.fontScale * 100)}%
+                </span>
+                <button
+                  className="h-7 w-7 rounded-full border border-cyan-200/40 text-cyan-100 transition hover:border-cyan-200"
+                  onClick={() => adjustFontScale(1)}
+                  aria-label="Increase text size"
+                  disabled={a11yPrefs.fontScale === 1.5}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <label className="flex items-center justify-between gap-3">
+              <span>Light mode</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.theme === "light"}
+                onChange={(event) =>
+                  updateA11yPref(
+                    "theme",
+                    event.target.checked ? "light" : "dark"
+                  )
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>High contrast</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.highContrast}
+                onChange={(event) =>
+                  updateA11yPref("highContrast", event.target.checked)
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>Color-blind filter</span>
+              <select
+                className="rounded-lg border border-cyan-200/30 bg-black/40 px-2 py-1 text-xs text-cyan-100"
+                value={a11yPrefs.colorFilter}
+                onChange={(event) =>
+                  updateA11yPref("colorFilter", event.target.value)
+                }
+              >
+                <option value="none">None</option>
+                <option value="protanopia">Protanopia assist</option>
+                <option value="deuteranopia">Deuteranopia assist</option>
+                <option value="tritanopia">Tritanopia assist</option>
+                <option value="achromatopsia">Low color</option>
+              </select>
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>Dyslexia-friendly font</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.dyslexiaFont}
+                onChange={(event) =>
+                  updateA11yPref("dyslexiaFont", event.target.checked)
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>Underline links</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.underlineLinks}
+                onChange={(event) =>
+                  updateA11yPref("underlineLinks", event.target.checked)
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>Reduce motion</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.reduceMotion}
+                onChange={(event) =>
+                  updateA11yPref("reduceMotion", event.target.checked)
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              <span>Extra focus outlines</span>
+              <input
+                type="checkbox"
+                checked={a11yPrefs.focusRing}
+                onChange={(event) =>
+                  updateA11yPref("focusRing", event.target.checked)
+                }
+              />
+            </label>
+          </div>
+
+          <button
+            className="mt-4 w-full rounded-full border border-cyan-200/50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100 transition hover:border-cyan-200 hover:text-cyan-50"
+            onClick={resetA11y}
+          >
+            Reset to default
+          </button>
+        </div>
+      )}
     </div>
   );
 }
