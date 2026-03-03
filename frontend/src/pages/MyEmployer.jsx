@@ -67,6 +67,7 @@ export default function MyEmployer() {
           <p className="eyebrow">My Employer Profile</p>
           <h1 className="title">Manage company details</h1>
           <p className="subtitle">Keep your company profile current.</p>
+          <p className="helper-text">Employer access: update your organization details.</p>
         </div>
       </header>
 

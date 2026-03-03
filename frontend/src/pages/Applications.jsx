@@ -16,9 +16,27 @@ export default function Applications() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const role = getAuthRole();
-  const canCreate = role === "user";
+  const canCreate = role === "employer" || role === "admin";
   const canUpdate = role === "employer" || role === "admin";
   const canDelete = role === "admin";
+  const headerCopy =
+    role === "admin"
+      ? {
+          title: "Oversee application flow",
+          subtitle: "Review submissions across employers and roles.",
+          note: "Admin access: create, update, or delete any application."
+        }
+      : role === "employer"
+        ? {
+            title: "Track candidate flow",
+            subtitle: "Monitor pipeline status and progress.",
+            note: "Employer access: create and update application statuses."
+          }
+        : {
+            title: "Track your applications",
+            subtitle: "Review statuses and next steps.",
+            note: "Candidate access: view your application history."
+          };
   const [createForm, setCreateForm] = useState({
     job_id: ""
   });
@@ -105,8 +123,9 @@ export default function Applications() {
       <header className="page-header">
         <div>
           <p className="eyebrow">Applications</p>
-          <h1 className="title">Track candidate flow</h1>
-          <p className="subtitle">Monitor pipeline status and progress.</p>
+          <h1 className="title">{headerCopy.title}</h1>
+          <p className="subtitle">{headerCopy.subtitle}</p>
+          <p className="helper-text">{headerCopy.note}</p>
         </div>
         {canCreate && (
           <button className="btn btn-primary" onClick={() => navigate("/applications")}>
@@ -193,19 +212,28 @@ export default function Applications() {
 
       <section className="pipeline-grid">
         {["pending", "accepted", "rejected"].map((status) => (
-          <div key={status} className="pipeline-column">
+          <div key={status} className={`pipeline-column status-${status}`}>
             <h3>{status}</h3>
             {grouped[status].map((app) => (
               <div key={app.id} className="pipeline-card">
-                <p className="name">User #{app.user_id}</p>
-                <p className="role">Job #{app.job_id}</p>
+                {role === "user" ? (
+                  <>
+                    <p className="name">Job #{app.job_id}</p>
+                    <p className="role">Application #{app.id}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="name">Candidate #{app.user_id}</p>
+                    <p className="role">Job #{app.job_id}</p>
+                  </>
+                )}
                 <p className="meta">Applied {app.created_at?.slice(0, 10)}</p>
                 {role === "user" && (
                   <button
                     className="btn btn-ghost"
                     onClick={() => navigate(`/jobs`)}
                   >
-                    View Jobs
+                    Browse Jobs
                   </button>
                 )}
               </div>

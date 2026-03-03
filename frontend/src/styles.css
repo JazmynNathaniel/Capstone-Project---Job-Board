@@ -103,6 +103,10 @@ html {
   border-color: #fff;
 }
 
+.a11y-high-contrast .helper-text {
+  color: #fff;
+}
+
 .theme-light body {
   background: #f7f3ff;
   color: #12091d;
@@ -130,6 +134,10 @@ html {
 .theme-light .nav-link.active {
   border-color: #5b21b6;
   color: #4c1d95;
+}
+
+.theme-light .helper-text {
+  color: #4b3a67;
 }
 
 .theme-light .a11y-menu {
@@ -173,4 +181,8 @@ html {
 .a11y-focus-ring :focus-visible {
   outline: 3px solid #7dd3fc;
   outline-offset: 3px;
+}
+
+.helper-text {
+  @apply -mt-3 text-xs text-purple-300;
 }

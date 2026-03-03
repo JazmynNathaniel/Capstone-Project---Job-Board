@@ -31,7 +31,7 @@ export default function Login() {
     <main className="page page-auth">
       <section className="auth-card">
         <h1>Welcome back</h1>
-        <p>Sign in to manage jobs and applicants.</p>
+        <p>Sign in to access your account and applications.</p>
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             className="input"

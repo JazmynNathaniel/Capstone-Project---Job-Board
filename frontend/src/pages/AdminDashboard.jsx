@@ -36,6 +36,7 @@ export default function AdminDashboard() {
           <p className="eyebrow">Admin Console</p>
           <h1 className="title">System management</h1>
           <p className="subtitle">Review jobs, employers, and user accounts.</p>
+          <p className="helper-text">Admin access: manage platform-wide records.</p>
         </div>
         <div className="admin-links">
           <a className="btn btn-ghost" href="/jobs">Manage jobs</a>

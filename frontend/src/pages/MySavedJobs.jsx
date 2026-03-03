@@ -43,6 +43,7 @@ export default function MySavedJobs() {
           <p className="eyebrow">Saved Jobs</p>
           <h1 className="title">My saved jobs</h1>
           <p className="subtitle">Keep track of roles you want to revisit.</p>
+          <p className="helper-text">Candidate access: remove jobs when you're no longer interested.</p>
         </div>
       </header>
 

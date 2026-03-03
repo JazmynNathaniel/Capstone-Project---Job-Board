@@ -108,6 +108,7 @@ export default function MyProfile() {
           <p className="eyebrow">My Profile</p>
           <h1 className="title">Manage your profile</h1>
           <p className="subtitle">Update your information or delete your profile.</p>
+          <p className="helper-text">Candidate access: keep your experience and skills current.</p>
         </div>
       </header>
 

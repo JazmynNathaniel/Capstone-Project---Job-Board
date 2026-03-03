@@ -85,6 +85,7 @@ export default function Profiles() {
           <p className="eyebrow">Profiles</p>
           <h1 className="title">Candidate profiles</h1>
           <p className="subtitle">Manage candidate bios and readiness.</p>
+          <p className="helper-text">Admin access: review and update user profiles.</p>
         </div>
         <button className="btn btn-primary">Add Profile</button>
       </header>

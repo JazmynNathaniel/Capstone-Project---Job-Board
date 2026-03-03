@@ -119,6 +119,7 @@ export default function Employers() {
           <p className="eyebrow">Employers</p>
           <h1 className="title">Company directory</h1>
           <p className="subtitle">Track employer profiles and contacts.</p>
+          <p className="helper-text">Admin access: manage employer accounts and contacts.</p>
         </div>
         <button className="btn btn-primary">Add Employer</button>
       </header>

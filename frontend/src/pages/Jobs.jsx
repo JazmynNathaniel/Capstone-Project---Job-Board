@@ -20,7 +20,26 @@ export default function Jobs() {
   const navigate = useNavigate();
   const role = getAuthRole();
   const canManageJobs = role === "employer" || role === "admin";
-  const canSaveApply = role === "user";
+  const canSave = role === "user";
+  const canApply = role === "employer" || role === "admin";
+  const headerCopy =
+    role === "admin"
+      ? {
+          title: "Manage open roles",
+          subtitle: "Review, edit, and oversee listings platform-wide.",
+          note: "Admin access: create, update, or delete any job listing."
+        }
+      : role === "employer"
+        ? {
+            title: "Post and manage roles",
+            subtitle: "Create listings and track applicant interest.",
+            note: "Employer access: create and edit roles for your company."
+          }
+        : {
+            title: "Explore open roles",
+            subtitle: "Search, save, and apply to roles that fit you.",
+            note: "Candidate access: save jobs and view role details."
+          };
   const [filters, setFilters] = useState({
     query: "",
     location: "",
@@ -69,7 +88,7 @@ export default function Jobs() {
 
   useEffect(() => {
     refresh();
-    if (canSaveApply) {
+    if (canSave) {
       listSavedJobs()
         .then((data) => {
           const ids = new Set((data || []).map((s) => s.job_id));
@@ -189,8 +208,9 @@ export default function Jobs() {
       <header className="page-header">
         <div>
           <p className="eyebrow">Jobs</p>
-          <h1 className="title">Open roles</h1>
-          <p className="subtitle">Search, filter, and create roles.</p>
+          <h1 className="title">{headerCopy.title}</h1>
+          <p className="subtitle">{headerCopy.subtitle}</p>
+          <p className="helper-text">{headerCopy.note}</p>
         </div>
         {canManageJobs && <button className="btn btn-primary">Post a Job</button>}
       </header>
@@ -366,14 +386,18 @@ export default function Jobs() {
               <span>Employer #{job.employer_id}</span>
               <span>Job ID {job.id}</span>
             </div>
-            {canSaveApply && (
+            {(canSave || canApply) && (
               <div className="job-actions">
-                <button className="btn btn-ghost" onClick={() => handleSaveToggle(job.id)}>
-                  {savedIds.has(job.id) ? "Saved" : "Save"}
-                </button>
-                <button className="btn btn-primary" onClick={() => handleApply(job.id)}>
-                  Apply here
-                </button>
+                {canSave && (
+                  <button className="btn btn-ghost" onClick={() => handleSaveToggle(job.id)}>
+                    {savedIds.has(job.id) ? "Saved" : "Save"}
+                  </button>
+                )}
+                {canApply && (
+                  <button className="btn btn-primary" onClick={() => handleApply(job.id)}>
+                    Create application
+                  </button>
+                )}
               </div>
             )}
           </article>
