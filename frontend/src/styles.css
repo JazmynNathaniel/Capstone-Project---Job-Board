@@ -211,12 +211,39 @@ html {
 }
 
 .helper-text {
-  @apply mt-6 text-xs text-purple-300;
+  display: none;
 }
 
 .a11y-menu {
   max-height: 70vh;
   overflow-y: auto;
+}
+
+.page-header {
+  @apply rounded-2xl border border-cyan-300/30 bg-purple-950/60 p-4 md:p-5;
+}
+
+.text-white {
+  color: #67e8f9 !important;
+}
+
+:where(
+  h1,
+  h2,
+  h3,
+  .title,
+  .job-head h3,
+  .pipeline-card .name,
+  .auth-card h1,
+  .admin-card h3,
+  .employer-card h3,
+  .profile-card h3
+) {
+  color: #67e8f9;
+}
+
+.a11y-fab:active {
+  cursor: grabbing;
 }
 
 @media (max-width: 640px) {
