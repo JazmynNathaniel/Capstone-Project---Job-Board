@@ -8,7 +8,7 @@ adzuna_bp = Blueprint("adzuna", __name__)
 @adzuna_bp.route("/search", methods=["GET"])
 def search_adzuna():
     app_id = os.getenv("ADZUNA_APP_ID")
-    app_key = os.getenv("dabb8c05e89b687e7274161cbe41d8ab")
+    app_key = os.getenv("ADZUNA_APP_KEY")
     if not app_id or not app_key:
         return jsonify({"error": "Adzuna API credentials are not configured"}), 500
 

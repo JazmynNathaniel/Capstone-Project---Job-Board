@@ -9,6 +9,7 @@ import {
   listSavedJobs,
   saveJob,
   unsaveJob,
+  searchAdzuna,
   formatApiError
 } from "../api";
 import "./Jobs.css";
@@ -18,6 +19,8 @@ export default function Jobs() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [savedIds, setSavedIds] = useState(new Set());
+  const [adzunaJobs, setAdzunaJobs] = useState([]);
+  const [adzunaError, setAdzunaError] = useState("");
   const navigate = useNavigate();
   const role = getAuthRole();
   const canManageJobs = role === "employer" || role === "admin";
@@ -45,7 +48,8 @@ export default function Jobs() {
     query: "",
     location: "",
     salaryRange: "",
-    sort: ""
+    sort: "",
+    external: true
   });
   const [createForm, setCreateForm] = useState({
     title: "",
@@ -85,6 +89,29 @@ export default function Jobs() {
     listJobs(buildParams(nextFilters))
       .then((data) => setJobs(data || []))
       .catch((err) => setError(formatApiError(err, "Failed to load jobs")));
+
+    if (role === "user" && nextFilters.external) {
+      const adzunaParams = {
+        query: nextFilters.query,
+        location: nextFilters.location,
+        results_per_page: 10
+      };
+      if (nextFilters.salaryRange === "40-60") {
+        adzunaParams.salary_min = 40000;
+        adzunaParams.salary_max = 60000;
+      } else if (nextFilters.salaryRange === "60-90") {
+        adzunaParams.salary_min = 60000;
+        adzunaParams.salary_max = 90000;
+      } else if (nextFilters.salaryRange === "90+") {
+        adzunaParams.salary_min = 90000;
+      }
+
+      searchAdzuna(adzunaParams)
+        .then((data) => setAdzunaJobs(data?.results || []))
+        .catch((err) => setAdzunaError(formatApiError(err, "Failed to load Adzuna jobs")));
+    } else {
+      setAdzunaJobs([]);
+    }
   };
 
   useEffect(() => {
@@ -102,14 +129,16 @@ export default function Jobs() {
   const handleFilter = () => {
     setError("");
     setMessage("");
+    setAdzunaError("");
     refresh(filters);
   };
 
   const handleClearFilters = () => {
-    const cleared = { query: "", location: "", salaryRange: "", sort: "" };
+    const cleared = { query: "", location: "", salaryRange: "", sort: "", external: true };
     setFilters(cleared);
     setError("");
     setMessage("");
+    setAdzunaError("");
     refresh(cleared);
   };
 
@@ -248,6 +277,16 @@ export default function Jobs() {
           <option value="alpha">Alphabetical</option>
           <option value="relevance">Relevance</option>
         </select>
+        {role === "user" && (
+          <label className="flex items-center gap-2 text-xs text-purple-200">
+            <input
+              type="checkbox"
+              checked={filters.external}
+              onChange={(e) => setFilters({ ...filters, external: e.target.checked })}
+            />
+            Include Adzuna results
+          </label>
+        )}
         <div className="filter-actions">
           <button type="button" className="btn btn-ghost" onClick={handleFilter}>
             Filter
@@ -265,6 +304,7 @@ export default function Jobs() {
 
       {error && <div className="error-banner">{error}</div>}
       {message && <div className="success-banner">{message}</div>}
+      {adzunaError && <div className="error-banner">{adzunaError}</div>}
 
       {canManageJobs && (
         <section className="form-grid">
@@ -407,6 +447,34 @@ export default function Jobs() {
           <div className="empty-card">No jobs available yet.</div>
         )}
       </section>
+
+      {role === "user" && adzunaJobs.length > 0 && (
+        <section className="card-grid">
+          {adzunaJobs.map((job) => (
+            <article key={job.id} className="job-card">
+              <div className="job-head">
+                <div>
+                  <h3>{job.title}</h3>
+                  <p>{job.location?.display_name || job.location?.area?.join(", ")}</p>
+                </div>
+                <span className="pill">
+                  {job.salary_min ? `$${Math.round(job.salary_min)}` : "Market"}
+                </span>
+              </div>
+              <p className="job-desc">{job.description?.slice(0, 220)}...</p>
+              <div className="job-meta">
+                <span>{job.company?.display_name || "Adzuna"}</span>
+                <span>Adzuna</span>
+              </div>
+              <div className="job-actions">
+                <a className="btn btn-primary" href={job.redirect_url} target="_blank" rel="noreferrer">
+                  View on Adzuna
+                </a>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

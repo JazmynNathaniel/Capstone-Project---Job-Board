@@ -264,6 +264,17 @@ export function submitApplication(payload) {
   });
 }
 
+export function searchAdzuna(params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, value);
+    }
+  });
+  const query = search.toString();
+  return request(`/adzuna/search${query ? `?${query}` : ""}`);
+}
+
 export function registerUser(payload) {
   return request("/auth/register", {
     method: "POST",
