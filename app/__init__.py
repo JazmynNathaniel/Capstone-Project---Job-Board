@@ -12,7 +12,12 @@ def create_app():
     dist_dir = os.path.join(project_root, "frontend", "dist")
     app = Flask(__name__, static_folder=dist_dir, static_url_path="/")
     app.config.from_object(Config)
-    print("DB URI =", app.config.get("SQLALCHEMY_DATABASE_URI"))
+    db_uri = app.config.get("SQLALCHEMY_DATABASE_URI")
+    print("DB URI =", db_uri)
+    if db_uri and db_uri.startswith("sqlite:///"):
+        db_path = db_uri.replace("sqlite:///", "", 1)
+        print("DB path =", db_path, "exists =", os.path.exists(db_path))
+    os.makedirs(app.instance_path, exist_ok=True)
 
 
     db.init_app(app)
