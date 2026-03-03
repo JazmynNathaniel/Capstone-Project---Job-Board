@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Routes, Route, NavLink } from "react-router-dom";
 import "./App.css";
 import { getAuthToken, getAuthRole, clearAuthToken } from "./api";
@@ -20,6 +20,17 @@ function App() {
   const [authed, setAuthed] = useState(!!getAuthToken());
   const [role, setRole] = useState(getAuthRole());
   const [a11yOpen, setA11yOpen] = useState(false);
+  const [a11yPos, setA11yPos] = useState(() => {
+    try {
+      const stored = localStorage.getItem("a11yFabPos");
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // Ignore storage errors.
+    }
+    return { x: 24, y: 120 };
+  });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ offsetX: 0, offsetY: 0 });
   const [a11yPrefs, setA11yPrefs] = useState(() => {
     const defaults = {
       fontScale: 1,
@@ -92,6 +103,14 @@ function App() {
     }
   }, [a11yPrefs]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem("a11yFabPos", JSON.stringify(a11yPos));
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [a11yPos]);
+
   const handleLogout = () => {
     clearAuthToken();
     setAuthed(false);
@@ -125,6 +144,32 @@ function App() {
       theme: "dark",
     });
   };
+
+  useEffect(() => {
+    const handleMove = (event) => {
+      if (!dragging) return;
+      const nextX = Math.min(
+        window.innerWidth - 56,
+        Math.max(12, event.clientX - dragRef.current.offsetX)
+      );
+      const nextY = Math.min(
+        window.innerHeight - 56,
+        Math.max(12, event.clientY - dragRef.current.offsetY)
+      );
+      setA11yPos({ x: nextX, y: nextY });
+    };
+
+    const handleUp = () => {
+      if (dragging) setDragging(false);
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+    };
+  }, [dragging]);
 
   return (
     <div className="app-root min-h-screen bg-black text-purple-100">
@@ -163,17 +208,6 @@ function App() {
               <h1 className="text-2xl font-semibold text-white">Welcome to Somedeed!</h1>
             </div>
             <div className="relative">
-              <button
-                className="rounded-full border border-cyan-200/60 bg-cyan-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-400/20"
-                aria-expanded={a11yOpen}
-                aria-controls="accessibility-menu"
-                aria-haspopup="dialog"
-                aria-keyshortcuts="Alt+A"
-                title="Accessibility menu (Alt + A)"
-                onClick={() => setA11yOpen((prev) => !prev)}
-              >
-                Accessibility
-              </button>
               {a11yOpen && (
                 <div
                   id="accessibility-menu"
@@ -375,6 +409,25 @@ function App() {
           </div>
         </footer>
       </div>
+      <button
+        className="fixed z-40 h-12 w-12 rounded-full border border-cyan-200/60 bg-cyan-500/10 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-cyan-100 shadow-lg shadow-cyan-500/30 transition hover:border-cyan-200 hover:bg-cyan-400/20"
+        style={{ left: a11yPos.x, top: a11yPos.y }}
+        aria-expanded={a11yOpen}
+        aria-controls="accessibility-menu"
+        aria-haspopup="dialog"
+        aria-keyshortcuts="Alt+A"
+        title="Accessibility menu (Alt + A)"
+        onClick={() => {
+          if (!dragging) setA11yOpen((prev) => !prev);
+        }}
+        onPointerDown={(event) => {
+          dragRef.current.offsetX = event.clientX - a11yPos.x;
+          dragRef.current.offsetY = event.clientY - a11yPos.y;
+          setDragging(true);
+        }}
+      >
+        A11y
+      </button>
     </div>
   );
 }

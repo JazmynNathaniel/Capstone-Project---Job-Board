@@ -19,12 +19,34 @@ button {
 }
 
 nav {
-  @apply flex gap-4 justify-center py-4 bg-black;
+  @apply flex gap-4 justify-center py-4;
+  background: #05000a;
 }
 
 nav .nav-link {
   text-shadow: 0 0 6px rgba(34, 211, 238, 0.45), 0 0 12px rgba(14, 165, 233, 0.35);
   box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.25), 0 0 16px rgba(14, 165, 233, 0.25);
+}
+
+:where(
+  .nav-link,
+  .job-card,
+  .pipeline-column,
+  .pipeline-card,
+  .empty-card,
+  .form-card,
+  .filter-bar,
+  .auth-card,
+  .admin-card,
+  .employer-card,
+  .profile-card,
+  .stat-card,
+  .feature-card,
+  .danger-card,
+  .success-banner,
+  .error-banner
+) {
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2), 0 0 18px rgba(56, 189, 248, 0.18);
 }
 
 :root {
@@ -190,4 +212,17 @@ html {
 
 .helper-text {
   @apply mt-6 text-xs text-purple-300;
+}
+
+.a11y-menu {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .a11y-menu {
+    right: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+  }
 }
