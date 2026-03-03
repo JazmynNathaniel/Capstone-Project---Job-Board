@@ -184,5 +184,5 @@ html {
 }
 
 .helper-text {
-  @apply -mt-3 text-xs text-purple-300;
+  @apply mt-4 text-xs text-purple-300;
 }
